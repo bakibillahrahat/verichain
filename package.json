@@ -1,0 +1,23 @@
+{
+  "name": "fake-product-identification",
+  "version": "1.0.0",
+  "description": "project on blockchain",
+  "main": "index.js",
+  "scripts": {
+    "dev": "lite-server",
+    "ganache": "ganache --server.port 7545 --chain.networkId 5777 --chain.chainId 1337 --wallet.deterministic",
+    "compile": "truffle compile",
+    "migrate": "truffle migrate",
+    "migrate:reset": "truffle migrate --reset",
+    "test": "truffle test"
+  },
+  "devDependencies": {
+    "html5-qrcode": "^2.2.0",
+    "lite-server": "2.6",
+    "truffle": "^5.11.5"
+  },
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^2.0.15",
+    "cors": "^2.8.5"
+  }
+}
