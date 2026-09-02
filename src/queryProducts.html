@@ -1,103 +1,103 @@
 <!doctype html>
 <html lang="en">
   <head>
-  	<title>Fake Product Identification</title>
+  	<title>Products For Sale - VeriChain</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="css/style.css">
-
-	</head>
-	<body>
-	<section class="ftco-section">
-		<div class="container-fluid px-md-5">
-			<div class="row justify-content-between">
-				<div class="col-md-8 order-md-last">
-					<div class="row">
-						<div class="col-md-6 text-center">
-							<a class="navbar-brand" href="index.html">Fake Product Identification <span>through Blockchain</span></a>
-						</div>
-						<div class="col-md-6 d-md-flex justify-content-end mb-md-0 mb-3">
-							<form action="#" class="searchform order-lg-last">
-			          
-			        </form>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4 d-flex">
-					<div class="social-media">
-		    		
-	        </div>
+	<link rel="stylesheet" href="css/qr_code_box.css">
+  </head>
+  <body>
+	<!-- Sticky Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark app-navbar" id="ftco-navbar">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">
+				<i class="fa fa-shield text-gradient-purple"></i>
+				<span>VeriChain</span>
+				<span class="brand-badge">Seller</span>
+			</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="fa fa-bars"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav mx-auto">
+					<li class="nav-item"><a href="index.html" class="nav-link"><i class="fa fa-home"></i> Home</a></li>
+					<li class="nav-item"><a href="manufacturer.html" class="nav-link"><i class="fa fa-industry"></i> Manufacturer</a></li>
+					<li class="nav-item active"><a href="seller.html" class="nav-link"><i class="fa fa-shopping-bag"></i> Seller</a></li>
+					<li class="nav-item"><a href="consumer.html" class="nav-link"><i class="fa fa-user-check"></i> Consumer</a></li>
+				</ul>
+				<div class="wallet-badge d-none d-lg-flex">
+					<span class="status-dot"></span>
+					<span id="walletAddressBadge">MetaMask Ready</span>
 				</div>
 			</div>
 		</div>
-		<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container-fluid">
-	    
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="fa fa-bars"></span> Menu
-	      </button>
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav m-auto">
-	        	<li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-			  	<li class="nav-item "><a href="manufacturer.html" class="nav-link">Manufacturer</a></li>
-	        	<li class="nav-item"><a href="seller.html" class="nav-link">Seller</a></li>
-	          	<li class="nav-item"><a href="consumer.html" class="nav-link">Consumer</a></li>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
-    <!-- END nav -->
+	</nav>
 
+	<div class="container py-4">
+		<!-- Page Header & Subnav -->
+		<div class="page-header">
+			<h1 class="page-title">Products Available <span class="text-gradient-purple">For Sale</span></h1>
+			<p class="page-desc">Query live product inventory assigned to your seller code directly from the blockchain contract.</p>
+			
+			<div class="subnav-pills">
+				<a href="sellProductSeller.html" class="subnav-pill"><i class="fa fa-shopping-cart"></i> Sell to Consumer</a>
+				<a href="queryProducts.html" class="subnav-pill active"><i class="fa fa-cubes"></i> Products for Sale</a>
+			</div>
+		</div>
 
-	</section>
+		<!-- Search Card -->
+		<div class="glass-card mb-4">
+			<div class="row align-items-end">
+				<div class="col-md-9 mb-3 mb-md-0">
+					<label for="sellerCode"><i class="fa fa-id-badge mr-1"></i> Seller Code</label>
+					<input type="text" class="form-control" id="sellerCode" placeholder="Enter Your Seller Code (e.g. SL-1001)" name="sellerCode">
+				</div>
+				<div class="col-md-3">
+					<button type="submit" class="btn btn-primary btn-register btn-block" id="register">
+						<i class="fa fa-search mr-2"></i> Query Stock
+					</button>
+				</div>
+			</div>
+		</div>
 
-	<section>
-        <div class="container">
-            <h2>Prodcuts for sale with the seller</h2>
-              
-              <div class="form-group">
-                <label for="name">Seller Code</label>
-                <input type="text" class="form-control" id="sellerCode" placeholder="Enter Seller Code" name="sellerCode">
-              </div>
-          
-              
-              
-              <button type="submit" class="btn btn-warning btn-register" id="register">Submit</button>
-          </div>
-    </section>
+		<!-- Results Table -->
+		<div class="table-responsive-wrapper">
+			<div class="p-3 bg-dark border-bottom border-secondary d-flex justify-content-between align-items-center">
+				<span class="font-weight-bold"><i class="fa fa-boxes text-gradient-purple mr-2"></i> Seller Inventory Records</span>
+				<small class="text-muted">Account: <span id="add" class="text-info">Connect MetaMask</span></small>
+			</div>
+			<div class="table-responsive">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Product ID</th>
+							<th>Serial Number</th>
+							<th>Product Name</th>
+							<th>Brand</th>
+							<th>Price ($/ETH)</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody id="logdata">
+						<tr>
+							<td colspan="6" class="text-center text-muted py-4">
+								<i class="fa fa-info-circle mr-2"></i> Enter seller code above and click Query Stock to view inventory
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 
-
-    <section>
-        <div class="container">
-            <h2>Product Details</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Product ID</th>
-                        <th>Product Serial Number</th>
-                        <th>Product Name</th>
-						<th>Product Brand</th>
-						<th>Product Price</th>
-						<th>Product Status</th>
-
-                    </tr>
-                </thead>
-                <tbody id="logdata">
-
-                </tbody>
-            </table>
-            <center><p>Your address is <b id="add"></b></p></center>
-        </div>
-    </section>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="js/popper.js"></script>
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/web3.min.js"></script>
-  <script src="js/truffle-contract.js"></script>
-  <script src="js/productDataApp.js"></script>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/popper.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/web3.min.js"></script>
+	<script src="js/truffle-contract.js"></script>
+	<script src="js/productDataApp.js"></script>
   </body>
 </html>

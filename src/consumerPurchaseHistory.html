@@ -1,96 +1,101 @@
 <!doctype html>
 <html lang="en">
   <head>
-  	<title>Fake Product Identification</title>
+  	<title>Consumer Purchase History - VeriChain</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="css/style.css">
-
-	</head>
-	<body>
-	<section class="ftco-section">
-		<div class="container-fluid px-md-5">
-			<div class="row justify-content-between">
-				<div class="col-md-8 order-md-last">
-					<div class="row">
-						<div class="col-md-6 text-center">
-							<a class="navbar-brand" href="index.html">Fake Product Identification <span>through Blockchain</span></a>
-						</div>
-						<div class="col-md-6 d-md-flex justify-content-end mb-md-0 mb-3">
-							<form action="#" class="searchform order-lg-last">
-			          
-			        </form>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4 d-flex">
-					<div class="social-media">
-		    		
-	        </div>
+	<link rel="stylesheet" href="css/qr_code_box.css">
+  </head>
+  <body>
+	<!-- Sticky Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark app-navbar" id="ftco-navbar">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">
+				<i class="fa fa-shield text-gradient-purple"></i>
+				<span>VeriChain</span>
+				<span class="brand-badge">Consumer</span>
+			</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="fa fa-bars"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav mx-auto">
+					<li class="nav-item"><a href="index.html" class="nav-link"><i class="fa fa-home"></i> Home</a></li>
+					<li class="nav-item"><a href="manufacturer.html" class="nav-link"><i class="fa fa-industry"></i> Manufacturer</a></li>
+					<li class="nav-item"><a href="seller.html" class="nav-link"><i class="fa fa-shopping-bag"></i> Seller</a></li>
+					<li class="nav-item active"><a href="consumer.html" class="nav-link"><i class="fa fa-user-check"></i> Consumer</a></li>
+				</ul>
+				<div class="wallet-badge d-none d-lg-flex">
+					<span class="status-dot"></span>
+					<span id="walletAddressBadge">MetaMask Ready</span>
 				</div>
 			</div>
 		</div>
-		<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container-fluid">
-	    
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="fa fa-bars"></span> Menu
-	      </button>
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav m-auto">
-	        	<li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-			  	<li class="nav-item "><a href="manufacturer.html" class="nav-link">Manufacturer</a></li>
-	        	<li class="nav-item"><a href="seller.html" class="nav-link">Seller</a></li>
-	          	<li class="nav-item"><a href="consumer.html" class="nav-link">Consumer</a></li>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
-    <!-- END nav -->
-	
-	<section>
-        <div class="container">
-            <h2>Consumer Product History</h2>
-       
-              <div class="form-group">
-                <label for="consumerCode">Consumer Code</label>
-                <input type="text" class="form-control" id="consumerCode" placeholder="Enter Consumer Code" name="consumerCode">
-              </div>
-              
-              <button type="submit" class="btn btn-warning btn-register" id="register">Get Products</button>
-          </div>
-    </section>
+	</nav>
 
+	<div class="container py-4">
+		<!-- Page Header & Subnav -->
+		<div class="page-header">
+			<h1 class="page-title">Consumer <span class="text-gradient-purple">Purchase History</span></h1>
+			<p class="page-desc">Retrieve your complete chronological ownership log and provenance chain directly from the smart contract.</p>
+			
+			<div class="subnav-pills">
+				<a href="verifyProducts.html" class="subnav-pill"><i class="fa fa-shield"></i> Product Verification</a>
+				<a href="consumerPurchaseHistory.html" class="subnav-pill active"><i class="fa fa-history"></i> Purchase History</a>
+			</div>
+		</div>
 
-	</section>
-    <section>
-        <div class="container">
-            <h2>Products purchased by consumer</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Product SN</th>
-                        <th>Seller Code</th>
-                        <th>Manufacturer Code</th>
-                    </tr>
-                </thead>
-                <tbody id="logdata">
+		<!-- Search Card -->
+		<div class="glass-card mb-4">
+			<div class="row align-items-end">
+				<div class="col-md-9 mb-3 mb-md-0">
+					<label for="consumerCode"><i class="fa fa-user mr-1"></i> Consumer Code</label>
+					<input type="text" class="form-control" id="consumerCode" placeholder="Enter Your Consumer Code (e.g. USER-9921)" name="consumerCode">
+				</div>
+				<div class="col-md-3">
+					<button type="submit" class="btn btn-primary btn-register btn-block" id="register">
+						<i class="fa fa-history mr-2"></i> Query Purchases
+					</button>
+				</div>
+			</div>
+		</div>
 
-                </tbody>
-            </table>
-            <center><p>Your address is <b id="add"></b></p></center>
-        </div>
-    </section>
+		<!-- Results Table -->
+		<div class="table-responsive-wrapper">
+			<div class="p-3 bg-dark border-bottom border-secondary d-flex justify-content-between align-items-center">
+				<span class="font-weight-bold"><i class="fa fa-receipt text-gradient-purple mr-2"></i> Verified Purchased Products</span>
+				<small class="text-muted">Account: <span id="add" class="text-info">Connect MetaMask</span></small>
+			</div>
+			<div class="table-responsive">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Product Serial Number (SN)</th>
+							<th>Authorized Seller Code</th>
+							<th>Manufacturer Code</th>
+						</tr>
+					</thead>
+					<tbody id="logdata">
+						<tr>
+							<td colspan="3" class="text-center text-muted py-4">
+								<i class="fa fa-info-circle mr-2"></i> Enter consumer code above and click Query Purchases to view your ownership history
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="js/popper.js"></script>
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/web3.min.js"></script>
-  <script src="js/truffle-contract.js"></script>
-  <script src="js/consumerPurchaseHistory.js"></script>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/popper.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/web3.min.js"></script>
+	<script src="js/truffle-contract.js"></script>
+	<script src="js/consumerPurchaseHistory.js"></script>
   </body>
 </html>
 

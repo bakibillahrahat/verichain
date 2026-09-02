@@ -1,70 +1,89 @@
 <!doctype html>
 <html lang="en">
   <head>
-  	<title>Fake Product Identification</title>
+  	<title>Consumer Dashboard - VeriChain</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="css/style.css">
-
-	</head>
-	<body>
-	<section class="ftco-section">
-		<div class="container-fluid px-md-5">
-			<div class="row justify-content-between">
-				<div class="col-md-8 order-md-last">
-					<div class="row">
-						<div class="col-md-6 text-center">
-							<a class="navbar-brand" href="index.html">Fake Product Identification <span>through Blockchain</span></a>
-						</div>
-						<div class="col-md-6 d-md-flex justify-content-end mb-md-0 mb-3">
-							<form action="#" class="searchform order-lg-last">
-			          
-			        </form>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4 d-flex">
-					<div class="social-media">
-		    		
-	        </div>
+	<link rel="stylesheet" href="css/qr_code_box.css">
+  </head>
+  <body>
+	<!-- Sticky Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark app-navbar" id="ftco-navbar">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">
+				<i class="fa fa-shield text-gradient-purple"></i>
+				<span>VeriChain</span>
+				<span class="brand-badge">Consumer</span>
+			</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="fa fa-bars"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav mx-auto">
+					<li class="nav-item"><a href="index.html" class="nav-link"><i class="fa fa-home"></i> Home</a></li>
+					<li class="nav-item"><a href="manufacturer.html" class="nav-link"><i class="fa fa-industry"></i> Manufacturer</a></li>
+					<li class="nav-item"><a href="seller.html" class="nav-link"><i class="fa fa-shopping-bag"></i> Seller</a></li>
+					<li class="nav-item active"><a href="consumer.html" class="nav-link"><i class="fa fa-user-check"></i> Consumer</a></li>
+				</ul>
+				<div class="wallet-badge d-none d-lg-flex">
+					<span class="status-dot"></span>
+					<span id="walletAddressBadge">MetaMask Ready</span>
 				</div>
 			</div>
 		</div>
-		<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container-fluid">
-	    
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="fa fa-bars"></span> Menu
-	      </button>
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav m-auto">
-	        	<li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-	        	<li class="nav-item"><a href="consumerPurchaseHistory.html" class="nav-link">Consumer Purchase History</a></li>
-            <li class="nav-item"><a href="verifyProducts.html" class="nav-link">Product Verification</a></li>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
+	</nav>
 
-    <section>
-      <div class="container">
-        <h2>
-          Consumer
-        </h2>
-        <h3>
-          Go to navigation bar to perform operations.
-        </h3>
-    </section>
-    <!-- END nav -->
+	<div class="container py-4">
+		<!-- Page Header & Subnav -->
+		<div class="page-header">
+			<h1 class="page-title">Consumer <span class="text-gradient-purple">Verification Center</span></h1>
+			<p class="page-desc">Scan product QR codes or check purchase history to verify counterfeit-free authenticity powered by blockchain.</p>
+			
+			<div class="subnav-pills">
+				<a href="verifyProducts.html" class="subnav-pill"><i class="fa fa-shield"></i> Product Verification</a>
+				<a href="consumerPurchaseHistory.html" class="subnav-pill"><i class="fa fa-history"></i> Purchase History</a>
+			</div>
+		</div>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="js/popper.js"></script>
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/web3.min.js"></script>
-  <script src="js/truffle-contract.js"></script>
+		<!-- Action Cards Grid -->
+		<div class="row">
+			<!-- Card 1: Product Verification -->
+			<div class="col-md-6 mb-4">
+				<div class="glass-card glass-card-hover action-card">
+					<div>
+						<div class="action-icon icon-emerald">
+							<i class="fa fa-shield"></i>
+						</div>
+						<h3 class="action-title">Verify Product Authenticity</h3>
+						<p class="action-desc">Point your device camera at the packaging QR code or enter the product serial number and consumer ID to confirm genuine manufacturer origin.</p>
+					</div>
+					<a href="verifyProducts.html" class="btn btn-primary btn-block">Verify Authenticity <i class="fa fa-arrow-right ml-2"></i></a>
+				</div>
+			</div>
+
+			<!-- Card 2: Consumer Purchase History -->
+			<div class="col-md-6 mb-4">
+				<div class="glass-card glass-card-hover action-card">
+					<div>
+						<div class="action-icon icon-purple">
+							<i class="fa fa-history"></i>
+						</div>
+						<h3 class="action-title">Inspect Purchase History</h3>
+						<p class="action-desc">View your immutable ledger of authenticated items, including manufacturer IDs, authorized seller IDs, and chronological provenance records.</p>
+					</div>
+					<a href="consumerPurchaseHistory.html" class="btn btn-outline btn-block">View History <i class="fa fa-arrow-right ml-2"></i></a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/web3.min.js"></script>
+	<script src="js/truffle-contract.js"></script>
   </body>
 </html>
 

@@ -66,13 +66,13 @@ App = {
 
                 var t= "";
 
-                var tr="<tr>";
+                var tr="<tr><td class='text-center py-4'>";
                 if(result){
-                    tr+="<td>"+ "Genuine Product."+"</td>";
+                    tr+="<div class='badge-genuine d-inline-flex align-items-center'><i class='fa fa-check-circle mr-2'></i> GENUINE AUTHENTIC PRODUCT</div><p class='text-muted mt-2 mb-0'><small>Cryptographically verified on the Ethereum blockchain.</small></p>";
                 }else{
-                    tr+="<td>"+ "Fake Product."+"</td>";
+                    tr+="<div class='badge-fake d-inline-flex align-items-center'><i class='fa fa-times-circle mr-2'></i> COUNTERFEIT / UNVERIFIED PRODUCT</div><p class='text-muted mt-2 mb-0'><small>Product serial number or consumer ID mismatch on the blockchain.</small></p>";
                 }
-                tr+="</tr>";
+                tr+="</td></tr>";
                 t+=tr;
 
                 document.getElementById('logdata').innerHTML = t;

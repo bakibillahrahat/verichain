@@ -1,86 +1,150 @@
 <!doctype html>
 <html lang="en">
   <head>
-  	<title>Fake Product Identification</title>
+  	<title>VeriChain - Decentralized Fake Product Identification</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="css/style.css">
-
-	</head>
-	<body>
-	<section class="ftco-section">
-		<div class="container-fluid px-md-5">
-			<div class="row justify-content-between">
-				<div class="col-md-8 order-md-last">
-					<div class="row">
-						<div class="col-md-6 text-center">
-							<a class="navbar-brand" href="index.html">Fake Product Identification <span>through Blockchain</span></a>
-						</div>
-						<div class="col-md-6 d-md-flex justify-content-end mb-md-0 mb-3">
-							<form action="#" class="searchform order-lg-last">
-			          
-			        </form>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4 d-flex">
-					<div class="social-media">
-		    		
-	        </div>
+	<link rel="stylesheet" href="css/qr_code_box.css">
+  </head>
+  <body>
+	<!-- Modern Sticky Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark app-navbar" id="ftco-navbar">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">
+				<i class="fa fa-shield text-gradient-purple"></i>
+				<span>VeriChain</span>
+				<span class="brand-badge">Blockchain</span>
+			</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="fa fa-bars"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav mx-auto">
+					<li class="nav-item active"><a href="index.html" class="nav-link"><i class="fa fa-home"></i> Home</a></li>
+					<li class="nav-item"><a href="manufacturer.html" class="nav-link"><i class="fa fa-industry"></i> Manufacturer</a></li>
+					<li class="nav-item"><a href="seller.html" class="nav-link"><i class="fa fa-shopping-bag"></i> Seller</a></li>
+					<li class="nav-item"><a href="consumer.html" class="nav-link"><i class="fa fa-user-check"></i> Consumer</a></li>
+				</ul>
+				<div class="wallet-badge d-none d-lg-flex">
+					<span class="status-dot"></span>
+					<span id="walletAddressBadge">MetaMask Ready</span>
 				</div>
 			</div>
 		</div>
-		<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container-fluid">
-	    
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="fa fa-bars"></span> Menu
-	      </button>
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav m-auto">
-	        	<li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-			  	<li class="nav-item "><a href="manufacturer.html" class="nav-link">Manufacturer</a></li>
-	        	<li class="nav-item"><a href="seller.html" class="nav-link">Seller</a></li>
-	          	<li class="nav-item"><a href="consumer.html" class="nav-link">Consumer</a></li>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
-    <!-- END nav -->
+	</nav>
 
+	<!-- Hero Section -->
+	<section class="hero-section">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-lg-10">
+					<span class="brand-badge mb-3 d-inline-block">Decentralized Supply Chain Verification</span>
+					<h1 class="hero-title">Eliminate Counterfeits with <span class="text-gradient-purple">Smart Blockchain</span> Provenance</h1>
+					<p class="hero-subtitle">
+						VeriChain creates an immutable digital identity for physical products from production to retail checkout, ensuring 100% genuine products for consumers.
+					</p>
+				</div>
+			</div>
 
+			<!-- Role Selection Cards -->
+			<div class="row mt-4">
+				<!-- Manufacturer Card -->
+				<div class="col-md-4 mb-4">
+					<div class="glass-card glass-card-hover action-card">
+						<div>
+							<div class="action-icon icon-purple">
+								<i class="fa fa-industry"></i>
+							</div>
+							<h3 class="action-title">Manufacturer Portal</h3>
+							<p class="action-desc">
+								Register new authentic products, generate tamper-proof QR codes, and authorize certified retail sellers on the blockchain.
+							</p>
+						</div>
+						<div>
+							<a href="manufacturer.html" class="btn btn-primary btn-block">Enter Portal <i class="fa fa-arrow-right ml-2"></i></a>
+						</div>
+					</div>
+				</div>
+
+				<!-- Seller Card -->
+				<div class="col-md-4 mb-4">
+					<div class="glass-card glass-card-hover action-card">
+						<div>
+							<div class="action-icon icon-blue">
+								<i class="fa fa-shopping-bag"></i>
+							</div>
+							<h3 class="action-title">Seller Portal</h3>
+							<p class="action-desc">
+								Manage verified inventory, scan product serial numbers via QR camera, and complete ownership transfer to consumers.
+							</p>
+						</div>
+						<div>
+							<a href="seller.html" class="btn btn-outline btn-block">Enter Portal <i class="fa fa-arrow-right ml-2"></i></a>
+						</div>
+					</div>
+				</div>
+
+				<!-- Consumer Card -->
+				<div class="col-md-4 mb-4">
+					<div class="glass-card glass-card-hover action-card">
+						<div>
+							<div class="action-icon icon-emerald">
+								<i class="fa fa-check-circle"></i>
+							</div>
+							<h3 class="action-title">Consumer Portal</h3>
+							<p class="action-desc">
+								Scan QR codes to immediately verify product authenticity and inspect the complete chronological purchase history.
+							</p>
+						</div>
+						<div>
+							<a href="consumer.html" class="btn btn-outline btn-block">Verify Now <i class="fa fa-shield ml-2"></i></a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Feature Highlights -->
+			<div class="row mt-5">
+				<div class="col-md-3 col-6 mb-3">
+					<div class="glass-card text-center p-3">
+						<i class="fa fa-cubes text-gradient-purple mb-2" style="font-size: 1.8rem;"></i>
+						<h5 class="mb-1" style="font-size: 1rem;">Decentralized</h5>
+						<small class="text-muted">Zero Single Point of Failure</small>
+					</div>
+				</div>
+				<div class="col-md-3 col-6 mb-3">
+					<div class="glass-card text-center p-3">
+						<i class="fa fa-lock text-gradient-purple mb-2" style="font-size: 1.8rem;"></i>
+						<h5 class="mb-1" style="font-size: 1rem;">Immutable Data</h5>
+						<small class="text-muted">Tamper-Proof Records</small>
+					</div>
+				</div>
+				<div class="col-md-3 col-6 mb-3">
+					<div class="glass-card text-center p-3">
+						<i class="fa fa-qrcode text-gradient-purple mb-2" style="font-size: 1.8rem;"></i>
+						<h5 class="mb-1" style="font-size: 1rem;">Instant QR Scan</h5>
+						<small class="text-muted">Live Camera Verification</small>
+					</div>
+				</div>
+				<div class="col-md-3 col-6 mb-3">
+					<div class="glass-card text-center p-3">
+						<i class="fa fa-history text-gradient-purple mb-2" style="font-size: 1.8rem;"></i>
+						<h5 class="mb-1" style="font-size: 1rem;">Full Provenance</h5>
+						<small class="text-muted">Complete Lifecycle Trace</small>
+					</div>
+				</div>
+			</div>
+		</div>
 	</section>
-
-	<div class="container-fluid px-md-5">
-		<div class="row justify-content-between">
-			<div class="col-md-12 order-md-last">
-				<div class="row">
-					<div class="col-md-12 text-center">
-						<a class="navbar-brand" href="index.html">WELCOME </a>
-					</div>
-					<div class="col-md-6 d-md-flex justify-content-end mb-md-0 mb-3">
-						<form action="#" class="searchform order-lg-last">
-				  
-				</form>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-4 d-flex">
-				<div class="social-media">
-				
-		</div>
-	</div>
-	</section> 
 
 	<script src="js/jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/main.js"></script>
 	<script src="js/web3.min.js"></script>
 	<script src="js/truffle-contract.js"></script>
- 
-	</body>
+  </body>
 </html>
 
 

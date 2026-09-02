@@ -1,77 +1,120 @@
 <!doctype html>
 <html lang="en">
   <head>
-  	<title>Fake Product Identification</title>
+  	<title>Manufacturer Dashboard - VeriChain</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="css/style.css">
-
-	</head>
-	<body>
-	<section class="ftco-section">
-		<div class="container-fluid px-md-5">
-			<div class="row justify-content-between">
-				<div class="col-md-8 order-md-last">
-					<div class="row">
-						<div class="col-md-6 text-center">
-							<a class="navbar-brand" href="index.html">Fake Product Identification <span>through Blockchain</span></a>
-						</div>
-						<div class="col-md-6 d-md-flex justify-content-end mb-md-0 mb-3">
-							<form action="#" class="searchform order-lg-last">
-			          
-			        </form>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4 d-flex">
-					<div class="social-media">
-		    		
-	        </div>
+	<link rel="stylesheet" href="css/qr_code_box.css">
+  </head>
+  <body>
+	<!-- Sticky Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark app-navbar" id="ftco-navbar">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">
+				<i class="fa fa-shield text-gradient-purple"></i>
+				<span>VeriChain</span>
+				<span class="brand-badge">Manufacturer</span>
+			</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="fa fa-bars"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav mx-auto">
+					<li class="nav-item"><a href="index.html" class="nav-link"><i class="fa fa-home"></i> Home</a></li>
+					<li class="nav-item active"><a href="manufacturer.html" class="nav-link"><i class="fa fa-industry"></i> Manufacturer</a></li>
+					<li class="nav-item"><a href="seller.html" class="nav-link"><i class="fa fa-shopping-bag"></i> Seller</a></li>
+					<li class="nav-item"><a href="consumer.html" class="nav-link"><i class="fa fa-user-check"></i> Consumer</a></li>
+				</ul>
+				<div class="wallet-badge d-none d-lg-flex">
+					<span class="status-dot"></span>
+					<span id="walletAddressBadge">MetaMask Ready</span>
 				</div>
 			</div>
 		</div>
-		<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container-fluid">
-	    
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="fa fa-bars"></span> Menu
-	      </button>
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav m-auto">
-	        	<li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-	        	<li class="nav-item"><a href="addProduct.html" class="nav-link">Add Product</a></li>
-				<li class="nav-item "><a href="addSeller.html" class="nav-link">Add Seller</a></li>
+	</nav>
 
-	          	<li class="nav-item"><a href="sellProductManufacturer.html" class="nav-link">Sell Product To Seller</a></li>
-				  <li class="nav-item"><a href="querySeller.html" class="nav-link">Query Seller</a></li>
+	<div class="container py-4">
+		<!-- Page Header -->
+		<div class="page-header">
+			<h1 class="page-title">Manufacturer <span class="text-gradient-purple">Operations Hub</span></h1>
+			<p class="page-desc">Manage your product catalog, authorize distributors, and generate cryptographic QR codes on the blockchain.</p>
+			
+			<div class="subnav-pills">
+				<a href="addProduct.html" class="subnav-pill"><i class="fa fa-plus-circle"></i> Add Product</a>
+				<a href="addSeller.html" class="subnav-pill"><i class="fa fa-user-plus"></i> Add Seller</a>
+				<a href="sellProductManufacturer.html" class="subnav-pill"><i class="fa fa-truck"></i> Sell to Seller</a>
+				<a href="querySeller.html" class="subnav-pill"><i class="fa fa-search"></i> Query Sellers</a>
+			</div>
+		</div>
 
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
-    <!-- END nav -->
+		<!-- Action Cards Grid -->
+		<div class="row">
+			<!-- Card 1: Add Product -->
+			<div class="col-md-6 col-lg-3 mb-4">
+				<div class="glass-card glass-card-hover action-card">
+					<div>
+						<div class="action-icon icon-purple">
+							<i class="fa fa-cube"></i>
+						</div>
+						<h3 class="action-title" style="font-size: 1.2rem;">Add Product</h3>
+						<p class="action-desc">Register new batch items with serial number, brand, price and instant QR download.</p>
+					</div>
+					<a href="addProduct.html" class="btn btn-primary btn-block btn-sm">Launch <i class="fa fa-arrow-right ml-1"></i></a>
+				</div>
+			</div>
 
-	</section>
+			<!-- Card 2: Add Seller -->
+			<div class="col-md-6 col-lg-3 mb-4">
+				<div class="glass-card glass-card-hover action-card">
+					<div>
+						<div class="action-icon icon-blue">
+							<i class="fa fa-user-plus"></i>
+						</div>
+						<h3 class="action-title" style="font-size: 1.2rem;">Add Seller</h3>
+						<p class="action-desc">Authorize licensed retail partners and distributors on the blockchain registry.</p>
+					</div>
+					<a href="addSeller.html" class="btn btn-outline btn-block btn-sm">Launch <i class="fa fa-arrow-right ml-1"></i></a>
+				</div>
+			</div>
 
-	<section>
-		<div class="container">
-		  <h2>
-			Manufacturer
-		  </h2>
-		  <h3>
-			Go to navigation bar to perform operations.
-		  </h3>
-	  </section>
+			<!-- Card 3: Sell Product to Seller -->
+			<div class="col-md-6 col-lg-3 mb-4">
+				<div class="glass-card glass-card-hover action-card">
+					<div>
+						<div class="action-icon icon-emerald">
+							<i class="fa fa-truck"></i>
+						</div>
+						<h3 class="action-title" style="font-size: 1.2rem;">Sell to Seller</h3>
+						<p class="action-desc">Scan QR codes or enter serial numbers to assign product inventory to sellers.</p>
+					</div>
+					<a href="sellProductManufacturer.html" class="btn btn-outline btn-block btn-sm">Launch <i class="fa fa-arrow-right ml-1"></i></a>
+				</div>
+			</div>
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script src="js/popper.js"></script>
+			<!-- Card 4: Query Sellers -->
+			<div class="col-md-6 col-lg-3 mb-4">
+				<div class="glass-card glass-card-hover action-card">
+					<div>
+						<div class="action-icon icon-purple">
+							<i class="fa fa-list-alt"></i>
+						</div>
+						<h3 class="action-title" style="font-size: 1.2rem;">Query Sellers</h3>
+						<p class="action-desc">Look up authorized sellers registered under your manufacturer code.</p>
+					</div>
+					<a href="querySeller.html" class="btn btn-outline btn-block btn-sm">Launch <i class="fa fa-arrow-right ml-1"></i></a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="js/jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/main.js"></script>
 	<script src="js/web3.min.js"></script>
 	<script src="js/truffle-contract.js"></script>
-</body>
+  </body>
 </html>
 
 

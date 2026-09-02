@@ -1,137 +1,112 @@
 <!doctype html>
 <html lang="en">
   <head>
-  	<title>Fake Product Identification</title>
+  	<title>Add Seller - VeriChain</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="css/style.css">
-
-	</head>
-	<body>
-	<section class="ftco-section">
-		<div class="container-fluid px-md-5">
-			<div class="row justify-content-between">
-				<div class="col-md-8 order-md-last">
-					<div class="row">
-						<div class="col-md-6 text-center">
-							<a class="navbar-brand" href="index.html">Fake Product Identification <span>through Blockchain</span></a>
-						</div>
-						<div class="col-md-6 d-md-flex justify-content-end mb-md-0 mb-3">
-							<form action="#" class="searchform order-lg-last">
-			          
-			        </form>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4 d-flex">
-					<div class="social-media">
-		    		
-	        </div>
+	<link rel="stylesheet" href="css/qr_code_box.css">
+  </head>
+  <body>
+	<!-- Sticky Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark app-navbar" id="ftco-navbar">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">
+				<i class="fa fa-shield text-gradient-purple"></i>
+				<span>VeriChain</span>
+				<span class="brand-badge">Manufacturer</span>
+			</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="fa fa-bars"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav mx-auto">
+					<li class="nav-item"><a href="index.html" class="nav-link"><i class="fa fa-home"></i> Home</a></li>
+					<li class="nav-item active"><a href="manufacturer.html" class="nav-link"><i class="fa fa-industry"></i> Manufacturer</a></li>
+					<li class="nav-item"><a href="seller.html" class="nav-link"><i class="fa fa-shopping-bag"></i> Seller</a></li>
+					<li class="nav-item"><a href="consumer.html" class="nav-link"><i class="fa fa-user-check"></i> Consumer</a></li>
+				</ul>
+				<div class="wallet-badge d-none d-lg-flex">
+					<span class="status-dot"></span>
+					<span id="walletAddressBadge">MetaMask Ready</span>
 				</div>
 			</div>
 		</div>
-		<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container-fluid">
-	    
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="fa fa-bars"></span> Menu
-	      </button>
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav m-auto">
-	        	<li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-			  	<li class="nav-item "><a href="manufacturer.html" class="nav-link">Manufacturer</a></li>
-	        	<li class="nav-item"><a href="seller.html" class="nav-link">Seller</a></li>
-	          	<li class="nav-item"><a href="consumer.html" class="nav-link">Consumer</a></li>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
-    <!-- END nav -->
+	</nav>
 
-	</section>
-    <section>
-        <div class="container">
-            <h2>Add Seller</h2>
+	<div class="container py-4">
+		<!-- Page Header & Subnav -->
+		<div class="page-header">
+			<h1 class="page-title">Register <span class="text-gradient-purple">Authorized Seller</span></h1>
+			<p class="page-desc">Enroll certified distributors and retail partners onto the immutable blockchain registry.</p>
+			
+			<div class="subnav-pills">
+				<a href="addProduct.html" class="subnav-pill"><i class="fa fa-plus-circle"></i> Add Product</a>
+				<a href="addSeller.html" class="subnav-pill active"><i class="fa fa-user-plus"></i> Add Seller</a>
+				<a href="sellProductManufacturer.html" class="subnav-pill"><i class="fa fa-truck"></i> Sell to Seller</a>
+				<a href="querySeller.html" class="subnav-pill"><i class="fa fa-search"></i> Query Sellers</a>
+			</div>
+		</div>
 
-
-
-			<div>
-				<table width="100%">
-					<tr width="100%">
-						<td width="15%" align="center">
-						<label for="seller_id">Seller Name </label>
-						</td>
-						<td width = "30%">
-						<input  class="form-control" id="SellerName" name="SellerName" type="text" />
-						</td>
-						<td width="15" align="center">
-						<label for="name">Seller Brand</label>
-						</td>
-						<td width = "30%" >
-						<input class="form-control" id="SellerBrand" name="SellerBrand" type="text" />
-						</td>
-					</tr>
-
-					<tr width="100%">
-						<td width="15%" align="center">
-						<label for="username">Seller Code</label>
-						</td>
-						<td width = "30%">
-						<input  class="form-control" id="SellerCode" name="SellerCode" type="text" />
-						</td>
-						<td width="15" align="center">
-						<label for="name">Seller Phone Number</label>
-						</td>
-						<td width = "30%" >
-						<input class="form-control" id="SellerPhoneNumber" name="SellerPhoneNumber" type="text" />
-						</td>
-					</tr>
-
-
-					<tr width="100%">
-						<td width="15%" align="center">
-						<label for="username">Seller Manager</label>
-						</td>
-						<td width = "30%">
-						<input  class="form-control" id="SellerManager" name="SellerManager" type="text" />
-						</td>
-						<td width="15" align="center">
-						<label for="name">Seller Address</label>
-						</td>
-						<td width = "30%" >
-						<input class="form-control" id="SellerAddress" name="SellerAddress" type="text" />
-						</td>
-					</tr>
-
+		<div class="row justify-content-center">
+			<div class="col-lg-10">
+				<div class="glass-card">
+					<h3 class="mb-4" style="font-size: 1.3rem;"><i class="fa fa-user-plus text-gradient-purple mr-2"></i> Seller Details</h3>
 					
-					<tr width="100%">
-						<td width="15%" align="center">
-						<label for="username">Manufacturer ID</label>
-						</td>
-						<td width = "30%">
-						<input  class="form-control" id="ManufacturerId" name="ManufacturerId" type="text" />
-						</td>
-						
-					</tr>
-				</table>
-			  </div>
-			  <div class="clear">&nbsp;</div>
+					<div class="form-grid">
+						<div class="form-group">
+							<label for="SellerName"><i class="fa fa-user mr-1"></i> Seller Name / Store Name</label>
+							<input class="form-control" id="SellerName" name="SellerName" placeholder="e.g. Apex Electronics NYC" type="text" />
+						</div>
 
+						<div class="form-group">
+							<label for="SellerBrand"><i class="fa fa-building-o mr-1"></i> Seller Brand / Affiliation</label>
+							<input class="form-control" id="SellerBrand" name="SellerBrand" placeholder="e.g. Authorized Flagship Store" type="text" />
+						</div>
 
-              
-              
-              <button type="submit" class="btn btn-warning btn-register" id="register">Add the Seller</button>
-          </div>
-    </section>
+						<div class="form-group">
+							<label for="SellerCode"><i class="fa fa-id-badge mr-1"></i> Seller Code</label>
+							<input class="form-control" id="SellerCode" name="SellerCode" placeholder="e.g. SL-1001" type="text" />
+						</div>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="js/popper.js"></script>
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/web3.min.js"></script>
-  <script src="js/truffle-contract.js"></script>
-  <script src="js/sellerApp.js"></script>
+						<div class="form-group">
+							<label for="SellerPhoneNumber"><i class="fa fa-phone mr-1"></i> Seller Phone Number</label>
+							<input class="form-control" id="SellerPhoneNumber" name="SellerPhoneNumber" placeholder="e.g. 5551234567" type="number" />
+						</div>
+
+						<div class="form-group">
+							<label for="SellerManager"><i class="fa fa-user-circle mr-1"></i> Manager Name</label>
+							<input class="form-control" id="SellerManager" name="SellerManager" placeholder="e.g. John Doe" type="text" />
+						</div>
+
+						<div class="form-group">
+							<label for="SellerAddress"><i class="fa fa-map-marker mr-1"></i> Physical Address / City</label>
+							<input class="form-control" id="SellerAddress" name="SellerAddress" placeholder="e.g. 5th Avenue, New York, NY" type="text" />
+						</div>
+
+						<div class="form-group" style="grid-column: 1 / -1;">
+							<label for="ManufacturerId"><i class="fa fa-shield mr-1"></i> Authorizing Manufacturer ID</label>
+							<input class="form-control" id="ManufacturerId" name="ManufacturerId" placeholder="e.g. MFR-001" type="text" />
+						</div>
+					</div>
+
+					<div class="mt-4 pt-2 text-center">
+						<button type="submit" class="btn btn-primary btn-register btn-lg btn-block" id="register">
+							<i class="fa fa-shield mr-2"></i> Register Seller to Blockchain
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="js/jquery.min.js"></script>
+	<script src="js/popper.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/web3.min.js"></script>
+	<script src="js/truffle-contract.js"></script>
+	<script src="js/sellerApp.js"></script>
   </body>
 </html>

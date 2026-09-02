@@ -1,132 +1,123 @@
 <!doctype html>
 <html lang="en">
   <head>
-  	<title>Fake Product Identification</title>
+  	<title>Add Product - VeriChain</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="stylesheet" href="css/qr_code_box.css">
-
-	</head>
-	<body>
-	<section class="ftco-section">
-		<div class="container-fluid px-md-5">
-			<div class="row justify-content-between">
-				<div class="col-md-8 order-md-last">
-					<div class="row">
-						<div class="col-md-6 text-center">
-							<a class="navbar-brand" href="index.html">Fake Product Identification <span>through Blockchain</span></a>
-						</div>
-						<div class="col-md-6 d-md-flex justify-content-end mb-md-0 mb-3">
-							<form action="#" class="searchform order-lg-last">
-			          
-			        </form>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4 d-flex">
-					<div class="social-media">
-		    		
-	        </div>
+  </head>
+  <body>
+	<!-- Sticky Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark app-navbar" id="ftco-navbar">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">
+				<i class="fa fa-shield text-gradient-purple"></i>
+				<span>VeriChain</span>
+				<span class="brand-badge">Manufacturer</span>
+			</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="fa fa-bars"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav mx-auto">
+					<li class="nav-item"><a href="index.html" class="nav-link"><i class="fa fa-home"></i> Home</a></li>
+					<li class="nav-item active"><a href="manufacturer.html" class="nav-link"><i class="fa fa-industry"></i> Manufacturer</a></li>
+					<li class="nav-item"><a href="seller.html" class="nav-link"><i class="fa fa-shopping-bag"></i> Seller</a></li>
+					<li class="nav-item"><a href="consumer.html" class="nav-link"><i class="fa fa-user-check"></i> Consumer</a></li>
+				</ul>
+				<div class="wallet-badge d-none d-lg-flex">
+					<span class="status-dot"></span>
+					<span id="walletAddressBadge">MetaMask Ready</span>
 				</div>
 			</div>
 		</div>
-		<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container-fluid">
-	    
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="fa fa-bars"></span> Menu
-	      </button>
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav m-auto">
-	        	<li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-			  	<li class="nav-item "><a href="manufacturer.html" class="nav-link">Manufacturer</a></li>
-	        	<li class="nav-item"><a href="seller.html" class="nav-link">Seller</a></li>
-	          	<li class="nav-item"><a href="consumer.html" class="nav-link">Consumer</a></li>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
-    <!-- END nav -->
+	</nav>
 
-	</section>
-    <section>
-        <div class="container">
-            <h2>Add Product</h2>
-
-
-
-			<div class="matrix">
-				<table width="100%">
-					<tr width="100%">
-						<td width="15%" align="center">
-						<label for="manufacturerID">Manufacturer ID</label>
-						</td>
-						<td width = "30%">
-						<input  class="form-control" id="manufacturerID" name="Manufacturer ID" type="text" />
-						</td>
-						<td width="15" align="center">
-						<label for="name">Product Name</label>
-						</td>
-						<td width = "30%" >
-						<input class="form-control" id="productName" name="productName" type="text" />
-						</td>
-					</tr>
-
-					<tr width="100%">
-						<td width="15%" align="center">
-						<label for="productSN">Product SN:</label>
-						</td>
-						<td width = "30%">
-						<input  class="form-control" id="productSN" name="productSN" type="text" />
-						</td>
-						<td width="15" align="center">
-						<label for="name">Product Brand</label>
-						</td>
-						<td width = "30%" >
-						<input class="form-control" id="productBrand" name="productBrand" type="text" />
-						</td>
-					</tr>
-
-
-					<tr width="100%">
-						<td width="15%" align="center">
-						<label for="productPrice">Product Price</label>
-						</td>
-						<td width = "30%">
-						<input  class="form-control" id="productPrice" name="productPrice" type="text" />
-						</td>
-					</tr>
-
-						
-					</tr>
-				</table>
-			  </div>
-			  <div class="clear" >&nbsp;</div>
-			  <div align="center">
-				<button type="submit" class="btn btn-warning btn-register" id="register" onclick="fetchQR()">Add the Product</button>
-			  </div>  
-			  <br></br>
-          </div>
-    </section>
-
-<!-- <br></br>	 -->
-	<div class="qr-code">
-		<div align="center">
-			<img align="center" hidden id="imgQR" src="" alt="qr-code" >
+	<div class="container py-4">
+		<!-- Page Header & Subnav -->
+		<div class="page-header">
+			<h1 class="page-title">Register <span class="text-gradient-purple">New Product</span></h1>
+			<p class="page-desc">Add product metadata directly to the immutable blockchain ledger and generate an instant QR code.</p>
+			
+			<div class="subnav-pills">
+				<a href="addProduct.html" class="subnav-pill active"><i class="fa fa-plus-circle"></i> Add Product</a>
+				<a href="addSeller.html" class="subnav-pill"><i class="fa fa-user-plus"></i> Add Seller</a>
+				<a href="sellProductManufacturer.html" class="subnav-pill"><i class="fa fa-truck"></i> Sell to Seller</a>
+				<a href="querySeller.html" class="subnav-pill"><i class="fa fa-search"></i> Query Sellers</a>
+			</div>
 		</div>
-		<br></br>
-		<div align="center">
-			<button align="center" hidden type="submit" class="btn btn-warning" id="download" onclick="saveImage()">Download QR Code</button>
+
+		<div class="row">
+			<!-- Form Column -->
+			<div class="col-lg-8 mb-4">
+				<div class="glass-card">
+					<h3 class="mb-4" style="font-size: 1.3rem;"><i class="fa fa-cube text-gradient-purple mr-2"></i> Product Information</h3>
+					
+					<div class="form-grid">
+						<div class="form-group">
+							<label for="manufacturerID"><i class="fa fa-building mr-1"></i> Manufacturer ID</label>
+							<input class="form-control" id="manufacturerID" name="Manufacturer ID" placeholder="e.g. MFR-001" type="text" />
+						</div>
+
+						<div class="form-group">
+							<label for="productName"><i class="fa fa-tag mr-1"></i> Product Name</label>
+							<input class="form-control" id="productName" name="productName" placeholder="e.g. Luxury Chronograph Watch" type="text" />
+						</div>
+
+						<div class="form-group">
+							<label for="productSN"><i class="fa fa-barcode mr-1"></i> Product Serial Number (SN)</label>
+							<input class="form-control" id="productSN" name="productSN" placeholder="e.g. SN-892348" type="text" />
+						</div>
+
+						<div class="form-group">
+							<label for="productBrand"><i class="fa fa-trademark mr-1"></i> Product Brand</label>
+							<input class="form-control" id="productBrand" name="productBrand" placeholder="e.g. Rolex / Apple / Nike" type="text" />
+						</div>
+
+						<div class="form-group" style="grid-column: 1 / -1;">
+							<label for="productPrice"><i class="fa fa-dollar mr-1"></i> Product Price (in USD / ETH Units)</label>
+							<input class="form-control" id="productPrice" name="productPrice" placeholder="e.g. 1500" type="number" />
+						</div>
+					</div>
+
+					<div class="mt-4 pt-2">
+						<button type="submit" class="btn btn-primary btn-register btn-lg btn-block" id="register" onclick="fetchQR()">
+							<i class="fa fa-check-circle mr-2"></i> Register Product on Blockchain & Generate QR
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- QR Code Preview Column -->
+			<div class="col-lg-4 mb-4">
+				<div class="glass-card text-center qr-section-card">
+					<h3 class="mb-3" style="font-size: 1.2rem;"><i class="fa fa-qrcode text-gradient-purple mr-2"></i> Generated QR Code</h3>
+					<p class="text-muted small mb-4">The QR code encodes the unique product serial number for camera verification.</p>
+					
+					<div class="qr-code">
+						<div class="qr-preview-box" id="qrContainer" style="display: none;">
+							<img id="imgQR" src="" alt="qr-code" style="display: none;" />
+						</div>
+						
+						<div id="qrPlaceholder" class="p-4 text-muted">
+							<i class="fa fa-qrcode" style="font-size: 4rem; opacity: 0.3;"></i>
+							<p class="mt-3 mb-0 small">Enter product details and click Register to preview QR code</p>
+						</div>
+
+						<div class="mt-3">
+							<button type="button" class="btn btn-outline btn-block" id="download" onclick="saveImage()" style="display: none;">
+								<i class="fa fa-download mr-2"></i> Download QR Image
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
-<br></br>
-
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="js/jquery.min.js"></script>
 	<script src="js/popper.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/main.js"></script>
@@ -139,24 +130,26 @@
 	var qrValue;
 	function fetchQR(){
 		qrValue = document.getElementById('productSN').value;
-		qrImage = document.querySelector(".qr-code");
-		qrImageResult = qrImage.querySelector("img");
-		src = qrImageResult.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qrValue}`;
+		if (!qrValue) return;
 		
-
-		downloadQrImg = document.getElementById('imgQR');
-		downloadQrBtn = document.getElementById('download');
-		downloadQrImg.removeAttribute('hidden');
-		downloadQrBtn.removeAttribute('hidden');
-
+		src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrValue)}`;
+		var downloadQrImg = document.getElementById('imgQR');
+		var downloadQrBtn = document.getElementById('download');
+		var qrContainer = document.getElementById('qrContainer');
+		var qrPlaceholder = document.getElementById('qrPlaceholder');
+		
+		downloadQrImg.src = src;
+		downloadQrImg.style.display = 'block';
+		qrContainer.style.display = 'inline-block';
+		downloadQrBtn.style.display = 'inline-flex';
+		qrPlaceholder.style.display = 'none';
 	}
 
 	function saveImage(){
-		saveAs(src,qrValue);
-		downloadQrImg.setAttribute('hidden', 'hidden');
-		downloadQrBtn.setAttribute('hidden', 'hidden');
+		if (src && qrValue) {
+			saveAs(src, qrValue + ".png");
+		}
 	}
 	</script>
-
   </body>
 </html>

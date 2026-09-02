@@ -1,144 +1,131 @@
 <!doctype html>
 <html lang="en">
   <head>
-  	<title>Fake Product Identification</title>
+  	<title>Sell to Seller - VeriChain</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="css/style.css">
-
-	</head>
-	<body>
-	<section class="ftco-section">
-		<div class="container-fluid px-md-5">
-			<div class="row justify-content-between">
-				<div class="col-md-8 order-md-last">
-					<div class="row">
-						<div class="col-md-6 text-center">
-							<a class="navbar-brand" href="index.html">Fake Product Identification <span>through Blockchain</span></a>
-						</div>
-						<div class="col-md-6 d-md-flex justify-content-end mb-md-0 mb-3">
-							<form action="#" class="searchform order-lg-last">
-			          
-			        </form>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4 d-flex">
-					<div class="social-media">
-		    		
-	        </div>
+	<link rel="stylesheet" href="css/qr_code_box.css">
+  </head>
+  <body>
+	<!-- Sticky Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark app-navbar" id="ftco-navbar">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">
+				<i class="fa fa-shield text-gradient-purple"></i>
+				<span>VeriChain</span>
+				<span class="brand-badge">Manufacturer</span>
+			</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="fa fa-bars"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav mx-auto">
+					<li class="nav-item"><a href="index.html" class="nav-link"><i class="fa fa-home"></i> Home</a></li>
+					<li class="nav-item active"><a href="manufacturer.html" class="nav-link"><i class="fa fa-industry"></i> Manufacturer</a></li>
+					<li class="nav-item"><a href="seller.html" class="nav-link"><i class="fa fa-shopping-bag"></i> Seller</a></li>
+					<li class="nav-item"><a href="consumer.html" class="nav-link"><i class="fa fa-user-check"></i> Consumer</a></li>
+				</ul>
+				<div class="wallet-badge d-none d-lg-flex">
+					<span class="status-dot"></span>
+					<span id="walletAddressBadge">MetaMask Ready</span>
 				</div>
 			</div>
 		</div>
-		<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container-fluid">
-	    
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="fa fa-bars"></span> Menu
-	      </button>
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav m-auto">
-	        	<li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-			  	<li class="nav-item "><a href="manufacturer.html" class="nav-link">Manufacturer</a></li>
-	        	<li class="nav-item"><a href="seller.html" class="nav-link">Seller</a></li>
-	          	<li class="nav-item"><a href="consumer.html" class="nav-link">Consumer</a></li>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
-    <!-- END nav -->
+	</nav>
 
-	</section>
-    <section>
-        <div class="container">
-            <h2>Sell Product to Seller</h2>
+	<div class="container py-4">
+		<!-- Page Header & Subnav -->
+		<div class="page-header">
+			<h1 class="page-title">Transfer Product <span class="text-gradient-purple">to Seller</span></h1>
+			<p class="page-desc">Scan product packaging QR code or input the serial number to assign inventory to an authorized distributor.</p>
+			
+			<div class="subnav-pills">
+				<a href="addProduct.html" class="subnav-pill"><i class="fa fa-plus-circle"></i> Add Product</a>
+				<a href="addSeller.html" class="subnav-pill"><i class="fa fa-user-plus"></i> Add Seller</a>
+				<a href="sellProductManufacturer.html" class="subnav-pill active"><i class="fa fa-truck"></i> Sell to Seller</a>
+				<a href="querySeller.html" class="subnav-pill"><i class="fa fa-search"></i> Query Sellers</a>
+			</div>
+		</div>
 
-			<section>
-				<div class="container-fluid">
-					<center>
-						<div id="qr-reader" style="width:300px"></div>
-						<div id="qr-reader-results"></div>
-					</center>
+		<div class="row">
+			<!-- QR Scanner Column -->
+			<div class="col-lg-5 mb-4">
+				<div class="glass-card text-center qr-section-card">
+					<h3 class="mb-3" style="font-size: 1.25rem;"><i class="fa fa-camera text-gradient-purple mr-2"></i> Scan Product QR</h3>
+					<p class="text-muted small mb-3">Position the QR code inside the camera viewfinder to automatically detect the serial number.</p>
+					
+					<div id="qr-reader"></div>
+					<div id="qr-reader-results" class="mt-3">Waiting for scan...</div>
 				</div>
-			</section>
+			</div>
 
-			<div>
-				<table width="100%">
-					<tr width="100%">
-						<td width="15" align="center">
-							<label for="productSN">Product SN:</label>
-							</td>
-							<td width = "30%" >
-							<input disabled class="form-control" id="productSN" name="productSN" type="text" />
-						</td>
+			<!-- Form Details Column -->
+			<div class="col-lg-7 mb-4">
+				<div class="glass-card">
+					<h3 class="mb-4" style="font-size: 1.3rem;"><i class="fa fa-truck text-gradient-purple mr-2"></i> Transfer Assignment</h3>
 
-						<td width="15%" align="center">
-						<label for="sellerCode">Seller Code</label>
-						</td>
-						<td width = "30%">
-						<input  class="form-control" id="sellerCode" name="sellerCode" type="text" />
-						</td>
+					<div class="form-group">
+						<label for="productSN"><i class="fa fa-barcode mr-1"></i> Product Serial Number (SN)</label>
+						<input class="form-control" id="productSN" name="productSN" placeholder="Scanned automatically or enter SN" type="text" />
+						<small class="text-muted">Detected automatically from camera scanner above or can be entered manually.</small>
+					</div>
 
-					</tr>
-                    
-						
-					</tr>
-				</table>
-			  </div>
-			  <div class="clear">&nbsp;</div>
+					<div class="form-group mt-3">
+						<label for="sellerCode"><i class="fa fa-id-badge mr-1"></i> Destination Seller Code</label>
+						<input class="form-control" id="sellerCode" name="sellerCode" placeholder="e.g. SL-1001" type="text" />
+						<small class="text-muted">Enter the unique code of the registered recipient distributor.</small>
+					</div>
 
+					<div class="mt-4 pt-2">
+						<button type="submit" class="btn btn-primary btn-register btn-lg btn-block" id="register">
+							<i class="fa fa-paper-plane mr-2"></i> Transfer Product on Blockchain
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-              
-              
-              <button type="submit" class="btn btn-warning btn-register" id="register">Sell to Seller</button>
-          </div>
-    </section>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="js/popper.js"></script>
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/web3.min.js"></script>
-  <script src="js/truffle-contract.js"></script>
-  <script src="js/sellProductManufacturer.js"></script>
-  <script src="https://unpkg.com/html5-qrcode"></script>
-  <script>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/popper.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/web3.min.js"></script>
+	<script src="js/truffle-contract.js"></script>
+	<script src="js/sellProductManufacturer.js"></script>
+	<script src="https://unpkg.com/html5-qrcode"></script>
+	<script>
 	var decodedText = "Enter Product SN";
-     function docReady(fn) {
-        // see if DOM is already available
-        if (document.readyState === "complete"
-           || document.readyState === "interactive") {
-	        // call on next available tick
-           setTimeout(fn, 1);
-        } else {
-            document.addEventListener("DOMContentLoaded", fn);
-        }
-    } 
+	function docReady(fn) {
+		if (document.readyState === "complete" || document.readyState === "interactive") {
+			setTimeout(fn, 1);
+		} else {
+			document.addEventListener("DOMContentLoaded", fn);
+		}
+	} 
 
-    docReady(function () {
-        var resultContainer = document.getElementById('qr-reader-results');
-        var lastResult, countResults = 0;
-        function onScanSuccess(decodedText, decodedResult) {
-            if (decodedText !== lastResult) {
-                ++countResults;
-                lastResult = decodedText;
-                // Handle on success condition with the decoded message.
-                var audio = new Audio('beep.wav');
-                audio.play();
-                // console.log(`Scan result ${decodedText}`, decodedResult);
-                document.getElementById('qr-reader-results').innerHTML=decodedText;
+	docReady(function () {
+		var resultContainer = document.getElementById('qr-reader-results');
+		var lastResult, countResults = 0;
+		function onScanSuccess(decodedText, decodedResult) {
+			if (decodedText !== lastResult) {
+				++countResults;
+				lastResult = decodedText;
+				try {
+					var audio = new Audio('beep.wav');
+					audio.play();
+				} catch(e) {}
+				document.getElementById('qr-reader-results').innerHTML = '<i class="fa fa-check-circle mr-1"></i> Scanned: ' + decodedText;
 				document.getElementById("productSN").value = decodedText;
-				//App.init(decodedText);
-                
-            }
-        }
+			}
+		}
 
-        var html5QrcodeScanner = new Html5QrcodeScanner(
-            "qr-reader", { fps: 10, qrbox: 250 });
-        html5QrcodeScanner.render(onScanSuccess);
-    });
-  </script>
+		var html5QrcodeScanner = new Html5QrcodeScanner(
+			"qr-reader", { fps: 10, qrbox: 240 });
+		html5QrcodeScanner.render(onScanSuccess);
+	});
+	</script>
   </body>
 </html>

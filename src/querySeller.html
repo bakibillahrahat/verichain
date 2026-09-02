@@ -1,101 +1,107 @@
 <!doctype html>
 <html lang="en">
   <head>
-  	<title>Fake Product Identification</title>
+  	<title>Query Sellers - VeriChain</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="css/style.css">
-
-	</head>
-	<body>
-	<section class="ftco-section">
-		<div class="container-fluid px-md-5">
-			<div class="row justify-content-between">
-				<div class="col-md-8 order-md-last">
-					<div class="row">
-						<div class="col-md-6 text-center">
-							<a class="navbar-brand" href="index.html">Fake Product Identification <span>through Blockchain</span></a>
-						</div>
-						<div class="col-md-6 d-md-flex justify-content-end mb-md-0 mb-3">
-							<form action="#" class="searchform order-lg-last">
-			          
-			        </form>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4 d-flex">
-					<div class="social-media">
-		    		
-	        </div>
+	<link rel="stylesheet" href="css/qr_code_box.css">
+  </head>
+  <body>
+	<!-- Sticky Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark app-navbar" id="ftco-navbar">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">
+				<i class="fa fa-shield text-gradient-purple"></i>
+				<span>VeriChain</span>
+				<span class="brand-badge">Manufacturer</span>
+			</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="fa fa-bars"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav mx-auto">
+					<li class="nav-item"><a href="index.html" class="nav-link"><i class="fa fa-home"></i> Home</a></li>
+					<li class="nav-item active"><a href="manufacturer.html" class="nav-link"><i class="fa fa-industry"></i> Manufacturer</a></li>
+					<li class="nav-item"><a href="seller.html" class="nav-link"><i class="fa fa-shopping-bag"></i> Seller</a></li>
+					<li class="nav-item"><a href="consumer.html" class="nav-link"><i class="fa fa-user-check"></i> Consumer</a></li>
+				</ul>
+				<div class="wallet-badge d-none d-lg-flex">
+					<span class="status-dot"></span>
+					<span id="walletAddressBadge">MetaMask Ready</span>
 				</div>
 			</div>
 		</div>
-		<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container-fluid">
-	    
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="fa fa-bars"></span> Menu
-	      </button>
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav m-auto">
-	        	<li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-			  	<li class="nav-item "><a href="manufacturer.html" class="nav-link">Manufacturer</a></li>
-	        	<li class="nav-item"><a href="seller.html" class="nav-link">Seller</a></li>
-	          	<li class="nav-item"><a href="consumer.html" class="nav-link">Consumer</a></li>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
-    <!-- END nav -->
-	
-	<section>
-        <div class="container">
-            <h2>Query Sellers</h2>
+	</nav>
 
-              <div class="form-group">
-                <label for="email">Manufacturer Code</label>
-                <input type="email" class="form-control" id="manufacturerCode" placeholder="Enter manufacturer Code" name="manufacturerCode">
-              </div>
-              
-              <button type="submit" class="btn btn-warning btn-register" id="register">Get Sellers</button>
-          </div>
-    </section>
+	<div class="container py-4">
+		<!-- Page Header & Subnav -->
+		<div class="page-header">
+			<h1 class="page-title">Authorized <span class="text-gradient-purple">Sellers Directory</span></h1>
+			<p class="page-desc">Query certified distributors authorized under your manufacturer code from the blockchain ledger.</p>
+			
+			<div class="subnav-pills">
+				<a href="addProduct.html" class="subnav-pill"><i class="fa fa-plus-circle"></i> Add Product</a>
+				<a href="addSeller.html" class="subnav-pill"><i class="fa fa-user-plus"></i> Add Seller</a>
+				<a href="sellProductManufacturer.html" class="subnav-pill"><i class="fa fa-truck"></i> Sell to Seller</a>
+				<a href="querySeller.html" class="subnav-pill active"><i class="fa fa-search"></i> Query Sellers</a>
+			</div>
+		</div>
 
+		<!-- Search Card -->
+		<div class="glass-card mb-4">
+			<div class="row align-items-end">
+				<div class="col-md-9 mb-3 mb-md-0">
+					<label for="manufacturerCode"><i class="fa fa-building mr-1"></i> Manufacturer Code</label>
+					<input type="text" class="form-control" id="manufacturerCode" placeholder="Enter Manufacturer Code (e.g. MFR-001)" name="manufacturerCode">
+				</div>
+				<div class="col-md-3">
+					<button type="submit" class="btn btn-primary btn-register btn-block" id="register">
+						<i class="fa fa-search mr-2"></i> Fetch Sellers
+					</button>
+				</div>
+			</div>
+		</div>
 
-	</section>
-    <section>
-        <div class="container">
-            <h2>Sellers</h2>
-            <p>Following are the sellers registered through Blockchain Network</p>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Brand</th>
-                        <th>Code</th>
-                        <th>Number</th>
-                        <th>Manager</th>
-                        <th>Address</th>
-                    </tr>
-                </thead>
-                <tbody id="logdata">
+		<!-- Results Table -->
+		<div class="table-responsive-wrapper">
+			<div class="p-3 bg-dark border-bottom border-secondary d-flex justify-content-between align-items-center">
+				<span class="font-weight-bold"><i class="fa fa-users text-gradient-purple mr-2"></i> Registered Sellers Registry</span>
+				<small class="text-muted">Caller: <span id="add" class="text-info">Connect MetaMask</span></small>
+			</div>
+			<div class="table-responsive">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Seller Name</th>
+							<th>Brand</th>
+							<th>Code</th>
+							<th>Phone Number</th>
+							<th>Manager</th>
+							<th>Address</th>
+						</tr>
+					</thead>
+					<tbody id="logdata">
+						<tr>
+							<td colspan="7" class="text-center text-muted py-4">
+								<i class="fa fa-info-circle mr-2"></i> Enter manufacturer code above and click Fetch Sellers to load registry
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 
-                </tbody>
-            </table>
-            <center><p>Your address is <b id="add"></b></p></center>
-        </div>
-    </section>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="js/popper.js"></script>
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/web3.min.js"></script>
-  <script src="js/truffle-contract.js"></script>
-  <script src="js/sellerDataApp.js"></script>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/popper.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/web3.min.js"></script>
+	<script src="js/truffle-contract.js"></script>
+	<script src="js/sellerDataApp.js"></script>
   </body>
 </html>
 

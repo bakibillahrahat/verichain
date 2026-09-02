@@ -1,100 +1,111 @@
 <!doctype html>
 <html lang="en">
   <head>
-  	<title>Fake Product Identification</title>
+  	<title>Verify Product Authenticity - VeriChain</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="css/style.css">
-
-	</head>
-	<body>
-	<section class="ftco-section">
-		<div class="container-fluid px-md-5">
-			<div class="row justify-content-between">
-				<div class="col-md-8 order-md-last">
-					<div class="row">
-						<div class="col-md-6 text-center">
-							<a class="navbar-brand" href="index.html">Fake Product Identification <span>through Blockchain</span></a>
-						</div>
-						<div class="col-md-6 d-md-flex justify-content-end mb-md-0 mb-3">
-							<form action="#" class="searchform order-lg-last">
-			          
-			        </form>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4 d-flex">
-					<div class="social-media">
-		    		
-	        </div>
+	<link rel="stylesheet" href="css/qr_code_box.css">
+  </head>
+  <body>
+	<!-- Sticky Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark app-navbar" id="ftco-navbar">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">
+				<i class="fa fa-shield text-gradient-purple"></i>
+				<span>VeriChain</span>
+				<span class="brand-badge">Consumer</span>
+			</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="fa fa-bars"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav mx-auto">
+					<li class="nav-item"><a href="index.html" class="nav-link"><i class="fa fa-home"></i> Home</a></li>
+					<li class="nav-item"><a href="manufacturer.html" class="nav-link"><i class="fa fa-industry"></i> Manufacturer</a></li>
+					<li class="nav-item"><a href="seller.html" class="nav-link"><i class="fa fa-shopping-bag"></i> Seller</a></li>
+					<li class="nav-item active"><a href="consumer.html" class="nav-link"><i class="fa fa-user-check"></i> Consumer</a></li>
+				</ul>
+				<div class="wallet-badge d-none d-lg-flex">
+					<span class="status-dot"></span>
+					<span id="walletAddressBadge">MetaMask Ready</span>
 				</div>
 			</div>
 		</div>
-		<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container-fluid">
-	    
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="fa fa-bars"></span> Menu
-	      </button>
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav m-auto">
-	        	<li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-			  	<li class="nav-item "><a href="manufacturer.html" class="nav-link">Manufacturer</a></li>
-	        	<li class="nav-item"><a href="seller.html" class="nav-link">Seller</a></li>
-	          	<li class="nav-item"><a href="consumer.html" class="nav-link">Consumer</a></li>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
-    <!-- END nav -->
-	
-	<section>
-        <div class="container">
-            <h2>Verify Products</h2>
-              
-			<section>
-				<div class="container-fluid">
-					<center>
-						<div id="qr-reader" style="width:300px"></div>
-						<div id="qr-reader-results"></div>
-					</center>
+	</nav>
+
+	<div class="container py-4">
+		<!-- Page Header & Subnav -->
+		<div class="page-header">
+			<h1 class="page-title">Product <span class="text-gradient-purple">Authenticity Verification</span></h1>
+			<p class="page-desc">Verify that your purchased item is 100% genuine and cryptographically registered by an authorized manufacturer.</p>
+			
+			<div class="subnav-pills">
+				<a href="verifyProducts.html" class="subnav-pill active"><i class="fa fa-shield"></i> Product Verification</a>
+				<a href="consumerPurchaseHistory.html" class="subnav-pill"><i class="fa fa-history"></i> Purchase History</a>
+			</div>
+		</div>
+
+		<div class="row">
+			<!-- QR Scanner Column -->
+			<div class="col-lg-5 mb-4">
+				<div class="glass-card text-center qr-section-card">
+					<h3 class="mb-3" style="font-size: 1.25rem;"><i class="fa fa-camera text-gradient-purple mr-2"></i> Scan Product QR</h3>
+					<p class="text-muted small mb-3">Position the QR code label from the product packaging inside the frame.</p>
+					
+					<div id="qr-reader"></div>
+					<div id="qr-reader-results" class="mt-3">Waiting for scan...</div>
 				</div>
-			</section>
-			  
-              <div class="form-group">
-				<label for="productSN">Product SN:</label>
-                <input disabled type="text" class="form-control" id="productSN" placeholder="Enter Product SN" name="productSN">
-                
-				<label for="consumerCode">Consumer Code</label>
-                <input type="text" class="form-control" id="consumerCode" placeholder="Enter Consumer Code" name="consumerCode">
-              </div>
-              
-              <button type="submit" class="btn btn-warning btn-register" id="register">Get Product Status</button>
-          </div>
-    </section>
+			</div>
 
+			<!-- Verification Form Column -->
+			<div class="col-lg-7 mb-4">
+				<div class="glass-card">
+					<h3 class="mb-4" style="font-size: 1.3rem;"><i class="fa fa-shield text-gradient-purple mr-2"></i> Verification Parameters</h3>
 
-	<br/>
-    <section>
-        <div class="container">
-            <h2>Is the product sold to cunsumer is fake or not?</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Product Verification Result</th>
-                    </tr>
-                </thead>
-                <tbody id="logdata">
+					<div class="form-group">
+						<label for="productSN"><i class="fa fa-barcode mr-1"></i> Product Serial Number (SN)</label>
+						<input class="form-control" id="productSN" name="productSN" placeholder="Scanned automatically or enter SN" type="text" />
+						<small class="text-muted">Detected from QR scanner or entered manually.</small>
+					</div>
 
-                </tbody>
-            </table>
-            <center><p>Your address is <b id="add"></b></p></center>
-        </div>
-    </section>
+					<div class="form-group mt-3">
+						<label for="consumerCode"><i class="fa fa-user-circle mr-1"></i> Consumer ID / Code</label>
+						<input class="form-control" id="consumerCode" name="consumerCode" placeholder="Enter your Consumer Code" type="text" />
+						<small class="text-muted">The consumer code associated with this purchase.</small>
+					</div>
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+					<div class="mt-4 pt-2">
+						<button type="submit" class="btn btn-primary btn-register btn-lg btn-block" id="register">
+							<i class="fa fa-search mr-2"></i> Query Blockchain for Authenticity
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Verification Results Card -->
+		<div class="table-responsive-wrapper">
+			<div class="p-3 bg-dark border-bottom border-secondary d-flex justify-content-between align-items-center">
+				<span class="font-weight-bold"><i class="fa fa-certificate text-gradient-purple mr-2"></i> Blockchain Verification Report</span>
+				<small class="text-muted">Caller: <span id="add" class="text-info">Connect MetaMask</span></small>
+			</div>
+			<div class="table-responsive">
+				<table class="table">
+					<tbody id="logdata">
+						<tr>
+							<td class="text-center text-muted py-4">
+								<i class="fa fa-info-circle mr-2"></i> Scan QR code or enter details above and click Verify to run blockchain check
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<script src="js/jquery.min.js"></script>
 	<script src="js/popper.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/main.js"></script>
@@ -104,40 +115,35 @@
 	<script src="https://unpkg.com/html5-qrcode"></script>
 	<script>
 	var decodedText = "Enter Product SN";
-    function docReady(fn) {
-        // see if DOM is already available
-        if (document.readyState === "complete"
-            || document.readyState === "interactive") {
-            // call on next available tick
-            setTimeout(fn, 1);
-        } else {
-            document.addEventListener("DOMContentLoaded", fn);
-        }
-    }
+	function docReady(fn) {
+		if (document.readyState === "complete" || document.readyState === "interactive") {
+			setTimeout(fn, 1);
+		} else {
+			document.addEventListener("DOMContentLoaded", fn);
+		}
+	}
 
-    docReady(function () {
-        var resultContainer = document.getElementById('qr-reader-results');
-        var lastResult, countResults = 0;
-        function onScanSuccess(decodedText, decodedResult) {
-            if (decodedText !== lastResult) {
-                ++countResults;
-                lastResult = decodedText;
-                // Handle on success condition with the decoded message.
-                var audio = new Audio('beep.wav');
-                audio.play();
-                // console.log(`Scan result ${decodedText}`, decodedResult);
-                document.getElementById('qr-reader-results').innerHTML=decodedText;
+	docReady(function () {
+		var resultContainer = document.getElementById('qr-reader-results');
+		var lastResult, countResults = 0;
+		function onScanSuccess(decodedText, decodedResult) {
+			if (decodedText !== lastResult) {
+				++countResults;
+				lastResult = decodedText;
+				try {
+					var audio = new Audio('beep.wav');
+					audio.play();
+				} catch(e) {}
+				document.getElementById('qr-reader-results').innerHTML = '<i class="fa fa-check-circle mr-1"></i> Scanned: ' + decodedText;
 				document.getElementById("productSN").value = decodedText;
-				//App.init(decodedText);
-                
-            }
-        }
+			}
+		}
 
-        var html5QrcodeScanner = new Html5QrcodeScanner(
-            "qr-reader", { fps: 10, qrbox: 250 });
-        html5QrcodeScanner.render(onScanSuccess);
-    });
-  </script>
+		var html5QrcodeScanner = new Html5QrcodeScanner(
+			"qr-reader", { fps: 10, qrbox: 240 });
+		html5QrcodeScanner.render(onScanSuccess);
+	});
+	</script>
   </body>
 </html>
 
