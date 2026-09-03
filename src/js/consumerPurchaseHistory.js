@@ -9,11 +9,6 @@ App = {
     initWeb3: async function() {
         if (window.ethereum) {
             App.web3Provider = window.ethereum;
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-            } catch (error) {
-                console.error("User denied account access", error);
-            }
         } else if (window.web3) {
             App.web3Provider = window.web3.currentProvider;
         } else {
@@ -25,84 +20,97 @@ App = {
     },
 
     initContract: function() {
-
-        $.getJSON('product.json',function(data){
-
-            var productArtifact=data;
-            App.contracts.product=TruffleContract(productArtifact);
+        $.getJSON('product.json', function(data) {
+            var productArtifact = data;
+            App.contracts.product = TruffleContract(productArtifact);
             App.contracts.product.setProvider(App.web3Provider);
+        }).fail(function() {
+            if (window.AppNotification) {
+                window.AppNotification('error', 'Failed to load product.json contract artifact.');
+            }
         });
 
         return App.bindEvents();
     },
 
     bindEvents: function() {
-
-        $(document).on('click','.btn-register',App.getData);
+        $(document).on('click', '.btn-register', App.getData);
     },
 
-    getData:function(event) {
+    getData: async function(event) {
         event.preventDefault();
-        var consumerCode = document.getElementById('consumerCode').value;
+        var consumerCode = document.getElementById('consumerCode').value.trim();
 
-        var productInstance;
-        //window.ethereum.enable();
-        web3.eth.getAccounts(function(error,accounts){
+        if (!consumerCode) {
+            if (window.AppNotification) {
+                window.AppNotification('warning', 'Please enter your Consumer Code to inspect history.');
+            } else {
+                alert('Please enter your Consumer Code to inspect history.');
+            }
+            return;
+        }
 
-            if(error) {
-                console.log(error);
+        var account = '0x0000000000000000000000000000000000000000';
+        try {
+            if (window.ethereum) {
+                var accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                if (accounts && accounts.length > 0) account = accounts[0];
+            }
+        } catch (e) {}
+
+        var $btn = $('.btn-register');
+        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin mr-2"></i> Querying Blockchain Ledger...');
+
+        App.contracts.product.deployed().then(function(instance) {
+            return instance.getPurchaseHistory(web3.fromAscii(consumerCode), { from: account });
+        }).then(function(result) {
+            $btn.prop('disabled', false).html('<i class="fa fa-history mr-2"></i> Inspect Purchase History');
+
+            var productSNs = result[0];
+            var sellerCodes = result[1];
+            var mfrCodes = result[2];
+
+            var count = 0;
+            var html = "";
+
+            for (var i = 0; i < productSNs.length; i++) {
+                var sn = window.cleanAscii(productSNs[i]);
+                var seller = window.cleanAscii(sellerCodes[i]);
+                var mfr = window.cleanAscii(mfrCodes[i]);
+
+                if (!sn || sn === "") continue;
+
+                count++;
+                html += "<tr>";
+                html += "<td><strong>" + count + "</strong></td>";
+                html += "<td><code>" + sn + "</code></td>";
+                html += "<td>" + (seller || 'Direct') + "</td>";
+                html += "<td>" + (mfr || 'Certified Manufacturer') + "</td>";
+                html += "<td><span class='badge badge-success'><i class='fa fa-check-circle mr-1'></i> Verified</span></td>";
+                html += "</tr>";
             }
 
-            var account=accounts[0];
-            // console.log(account);
+            if (count === 0) {
+                html = "<tr><td colspan='5' class='text-center text-muted py-4'><i class='fa fa-history mr-2'></i> No purchased products recorded for consumer ID <strong>" + consumerCode + "</strong>.</td></tr>";
+            }
 
-            App.contracts.product.deployed().then(function(instance){
+            document.getElementById('logdata').innerHTML = html;
+            document.getElementById('add').innerHTML = (account && account.length > 10) ? (account.substring(0, 6) + '...' + account.substring(account.length - 4)) : 'View Query';
 
-                productInstance=instance;
-                return productInstance.getPurchaseHistory(web3.fromAscii(consumerCode),{from:account});
+            if (window.AppNotification) {
+                window.AppNotification('info', 'Found ' + count + ' authenticated purchases for consumer ' + consumerCode);
+            }
 
-            }).then(function(result){
-                
-                var productSNs=[];
-                var sellerCodes=[];
-                var manufacturerCodes=[];
-                // console.log(result);
-                
-                for(var k=0;k<result[0].length;k++){
-                    productSNs[k]=web3.toAscii(result[0][k]);
-                }
-
-                for(var k=0;k<result[1].length;k++){
-                    sellerCodes[k]=web3.toAscii(result[1][k]);
-
-                }
-
-                for(var k=0;k<result[2].length;k++){
-                    manufacturerCodes[k]=web3.toAscii(result[2][k]);
-                }
-                
-
-                var t= "";
-                document.getElementById('logdata').innerHTML = t;
-                for(var i=0;i<result[0].length;i++) {
-                    var temptr = "<td>"+sellerCodes[i]+"</td>";
-                    if(temptr === "<td>0</td>"){
-                        break;
-                    }
-                    var tr="<tr>";
-                    tr+="<td>"+productSNs[i]+"</td>";
-                    tr+="<td>"+sellerCodes[i]+"</td>";
-                    tr+="<td>"+manufacturerCodes[i]+"</td>";
-                    tr+="</tr>";
-                    t+=tr;
-
-                }
-                document.getElementById('logdata').innerHTML += t;
-                document.getElementById('add').innerHTML=account;
-           }).catch(function(err){
-               console.log(err.message);
-           })
-        })
+        }).catch(function(err) {
+            $btn.prop('disabled', false).html('<i class="fa fa-history mr-2"></i> Inspect Purchase History');
+            console.error(err);
+            var msg = err.message || err;
+            if (window.AppNotification) {
+                window.AppNotification('error', 'Query failed: ' + msg);
+            } else {
+                alert('Query failed: ' + msg);
+            }
+        });
     }
 };
 

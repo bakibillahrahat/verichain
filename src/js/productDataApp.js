@@ -9,11 +9,6 @@ App = {
     initWeb3: async function() {
         if (window.ethereum) {
             App.web3Provider = window.ethereum;
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-            } catch (error) {
-                console.error("User denied account access", error);
-            }
         } else if (window.web3) {
             App.web3Provider = window.web3.currentProvider;
         } else {
@@ -25,104 +20,102 @@ App = {
     },
 
     initContract: function() {
-
-        $.getJSON('product.json',function(data){
-
-            var productArtifact=data;
-            App.contracts.product=TruffleContract(productArtifact);
+        $.getJSON('product.json', function(data) {
+            var productArtifact = data;
+            App.contracts.product = TruffleContract(productArtifact);
             App.contracts.product.setProvider(App.web3Provider);
+        }).fail(function() {
+            if (window.AppNotification) {
+                window.AppNotification('error', 'Failed to load product.json contract artifact.');
+            }
         });
 
         return App.bindEvents();
     },
 
     bindEvents: function() {
-
-        $(document).on('click','.btn-register',App.getData);
+        $(document).on('click', '.btn-register', App.getData);
     },
 
-    getData:function(event) {
+    getData: async function(event) {
         event.preventDefault();
-        var sellerCode = document.getElementById('sellerCode').value;
+        var sellerCode = document.getElementById('sellerCode').value.trim();
 
-        var productInstance;
-        //window.ethereum.enable();
-        web3.eth.getAccounts(function(error,accounts){
+        if (!sellerCode) {
+            if (window.AppNotification) {
+                window.AppNotification('warning', 'Please enter a Seller Code to query inventory.');
+            } else {
+                alert('Please enter a Seller Code to query inventory.');
+            }
+            return;
+        }
 
-            if(error) {
-                console.log(error);
+        var account = '0x0000000000000000000000000000000000000000';
+        try {
+            if (window.ethereum) {
+                var accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                if (accounts && accounts.length > 0) account = accounts[0];
+            }
+        } catch (e) {}
+
+        var $btn = $('.btn-register');
+        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin mr-2"></i> Querying Ledger...');
+
+        App.contracts.product.deployed().then(function(instance) {
+            return instance.queryProductsList(web3.fromAscii(sellerCode), { from: account });
+        }).then(function(result) {
+            $btn.prop('disabled', false).html('<i class="fa fa-search mr-2"></i> Query Stock');
+
+            var productIds = result[0];
+            var count = 0;
+            var html = "";
+
+            for (var i = 0; i < productIds.length; i++) {
+                var pid = productIds[i].toNumber ? productIds[i].toNumber() : productIds[i];
+                var sn = window.cleanAscii(result[1][i]);
+                var name = window.cleanAscii(result[2][i]);
+                var brand = window.cleanAscii(result[3][i]);
+                var price = result[4][i].toNumber ? result[4][i].toNumber() : result[4][i];
+                var status = window.cleanAscii(result[5][i]);
+
+                if (!sn || sn === "") continue;
+
+                count++;
+                var statusBadge = (status === "Available") ? 
+                    "<span class='badge badge-success'>Available</span>" : 
+                    "<span class='badge badge-secondary'>" + status + "</span>";
+
+                html += "<tr>";
+                html += "<td><strong>#" + pid + "</strong></td>";
+                html += "<td><code>" + sn + "</code></td>";
+                html += "<td>" + name + "</td>";
+                html += "<td>" + brand + "</td>";
+                html += "<td>$" + price + "</td>";
+                html += "<td>" + statusBadge + "</td>";
+                html += "</tr>";
             }
 
-            var account=accounts[0];
-            // console.log(account);
+            if (count === 0) {
+                html = "<tr><td colspan='6' class='text-center text-muted py-4'><i class='fa fa-box-open mr-2'></i> No inventory assigned to seller code <strong>" + sellerCode + "</strong> on the blockchain.</td></tr>";
+            }
 
-            App.contracts.product.deployed().then(function(instance){
+            document.getElementById('logdata').innerHTML = html;
+            document.getElementById('add').innerHTML = (account && account.length > 10) ? (account.substring(0, 6) + '...' + account.substring(account.length - 4)) : 'View Query';
 
-                productInstance=instance;
-                return productInstance.queryProductsList(web3.fromAscii(sellerCode),{from:account});
+            if (window.AppNotification) {
+                window.AppNotification('info', 'Found ' + count + ' products for seller ' + sellerCode);
+            }
 
-            }).then(function(result){
-                
-                //console.log()
-                var productIds=[];
-                var productSNs=[];
-                var productNames=[];
-                var productBrands=[];
-                var productPrices=[];
-                var productStatus=[];
-
-                // console.log(result);
-                
-                for(var k=0;k<result[0].length;k++){
-                    productIds[k]=result[0][k];
-                }
-
-                for(var k=0;k<result[1].length;k++){
-                    productSNs[k]=web3.toAscii(result[1][k]);
-
-                }
-
-                for(var k=0;k<result[2].length;k++){
-                    productNames[k]=web3.toAscii(result[2][k]);
-                }
-
-                for(var k=0;k<result[3].length;k++){
-                    productBrands[k]=web3.toAscii(result[3][k]);
-                }
-
-                for(var k=0;k<result[4].length;k++){
-                    productPrices[k]=result[4][k];
-                }
-
-                for(var k=0;k<result[5].length;k++){
-                    productStatus[k]=web3.toAscii(result[5][k]);
-                }
-
-                var t= "";
-                document.getElementById('logdata').innerHTML = t;
-                for(var i=0;i<result[0].length;i++) {
-                    var temptr = "<td>"+productPrices[i]+"</td>";
-                    if(temptr === "<td>0</td>"){
-                        break;
-                    }
-
-                    var tr="<tr>";
-                    tr+="<td>"+productIds[i]+"</td>";
-                    tr+="<td>"+productSNs[i]+"</td>";
-                    tr+="<td>"+productNames[i]+"</td>";
-                    tr+="<td>"+productBrands[i]+"</td>";
-                    tr+="<td>"+productPrices[i]+"</td>";
-                    tr+="<td>"+productStatus[i]+"</td>";
-                    tr+="</tr>";
-                    t+=tr;
-
-                }
-                document.getElementById('logdata').innerHTML += t;
-                document.getElementById('add').innerHTML=account;
-           }).catch(function(err){
-               console.log(err.message);
-           })
-        })
+        }).catch(function(err) {
+            $btn.prop('disabled', false).html('<i class="fa fa-search mr-2"></i> Query Stock');
+            console.error(err);
+            var msg = err.message || err;
+            if (window.AppNotification) {
+                window.AppNotification('error', 'Query failed: ' + msg);
+            } else {
+                alert('Query failed: ' + msg);
+            }
+        });
     }
 };
 

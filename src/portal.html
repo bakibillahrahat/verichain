@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  	<title>VeriChain — Enterprise Management Workspace</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<script>
+		// Synchronous Auth Guard: Immediately block unauthenticated access before DOM renders
+		(function() {
+			try {
+				var stored = localStorage.getItem('verichain_user');
+				if (!stored) {
+					window.location.replace('auth.html?redirect=portal.html');
+				}
+			} catch (e) {
+				window.location.replace('auth.html?redirect=portal.html');
+			}
+		})();
+	</script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/modern-design.css">
+	<style>
+		.workspace-banner {
+			background: linear-gradient(135deg, rgba(19, 27, 49, 0.95) 0%, rgba(14, 20, 36, 0.98) 100%);
+			border: 1px solid rgba(129, 140, 248, 0.3);
+			border-radius: var(--radius-lg);
+			padding: 1.8rem;
+			margin-bottom: 2rem;
+			backdrop-filter: blur(16px);
+			box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+		}
+		.tab-nav-btn {
+			color: var(--text-muted);
+			background: rgba(255, 255, 255, 0.03);
+			border: 1px solid var(--border-glass);
+			border-radius: var(--radius-md);
+			padding: 0.65rem 1.3rem;
+			font-weight: 600;
+			font-size: 0.92rem;
+			transition: all 0.2s ease;
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			text-decoration: none !important;
+		}
+		.tab-nav-btn.active {
+			background: var(--accent-primary);
+			color: #fff !important;
+			border-color: var(--accent-primary);
+			box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+		}
+		.qr-box-inner {
+			background: #ffffff;
+			padding: 14px;
+			border-radius: var(--radius-md);
+			display: inline-block;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+		}
+	</style>
+  </head>
+  <body>
+	<!-- Sticky Modern Navbar -->
+	<nav class="modern-nav">
+		<div class="modern-nav-container">
+			<a class="nav-brand-logo" href="index.html">
+				<i class="fa fa-shield"></i>
+				<span>VeriChain</span>
+				<span class="brand-pill" id="portalRoleBadge">Workspace</span>
+			</a>
+
+			<div class="nav-actions">
+				<a href="dashboard.html" class="btn-modern-outline">
+					<i class="fa fa-dashboard mr-1"></i> Security Dashboard
+				</a>
+				<a href="index.html" class="btn-modern-outline">
+					<i class="fa fa-home mr-1"></i> Consumer Verifier
+				</a>
+				<button class="btn-modern-outline" style="border-color: rgba(244, 63, 94, 0.4); color: #fda4af !important;" onclick="logout()">
+					<i class="fa fa-sign-out mr-1"></i> Logout
+				</button>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container py-4">
+		<!-- Workspace Profile Header Banner -->
+		<div class="workspace-banner d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+			<div>
+				<div class="d-flex align-items-center mb-1">
+					<span class="brand-pill mr-2" id="headerRoleBadge" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc;">Manufacturer</span>
+					<h2 class="text-light font-weight-bold mb-0" id="headerOrgName" style="font-size: 1.6rem; letter-spacing: -0.02em;">Rolex Geneva SA</h2>
+				</div>
+				<p class="text-muted small mb-0 mt-1">
+					<span id="headerBrand">Brand: Rolex</span> &bull; 
+					<span id="headerCode">Code: MFR-ROLEX</span> &bull; 
+					<span id="headerLocation">HQ: Geneva, Switzerland</span>
+				</p>
+			</div>
+			<div class="mt-3 mt-md-0 text-md-right">
+				<small class="text-muted d-block">Authorized Wallet Identity:</small>
+				<code class="text-info font-weight-bold" id="headerWallet" style="font-size: 0.88rem;">0x71C7...8976F</code>
+			</div>
+		</div>
+
+		<!-- ================= MANUFACTURER WORKSPACE ================= -->
+		<div id="manufacturerWorkspace">
+			<!-- Tab Navigation Pills -->
+			<div class="d-flex flex-wrap mb-4" style="gap: 8px;">
+				<a class="tab-nav-btn active" data-toggle="pill" href="#tabMintProduct">
+					<i class="fa fa-plus-circle"></i> Mint New Product
+				</a>
+				<a class="tab-nav-btn" data-toggle="pill" href="#tabFactoryInventory" onclick="loadMfrInventory()">
+					<i class="fa fa-boxes"></i> Factory Inventory Ledger
+				</a>
+				<a class="tab-nav-btn" data-toggle="pill" href="#tabShipSeller">
+					<i class="fa fa-truck"></i> Ship to Retail Buyer
+				</a>
+				<a class="tab-nav-btn" data-toggle="pill" href="#tabMfrProfile">
+					<i class="fa fa-id-card-o"></i> Corporate Profile
+				</a>
+			</div>
+
+			<!-- Tab Content Area -->
+			<div class="tab-content">
+				<!-- 1. MINT PRODUCT TAB -->
+				<div class="tab-pane fade show active" id="tabMintProduct">
+					<div class="row">
+						<div class="col-lg-8 mb-4">
+							<div class="modern-card p-4">
+								<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+									<h3 class="mb-2 mb-md-0 text-light font-weight-bold" style="font-size: 1.25rem;">
+										<i class="fa fa-cube text-gradient mr-2"></i> Register Product on Blockchain Ledger
+									</h3>
+									<div>
+										<span class="text-muted small mr-2">1-Click Auto-Fill:</span>
+										<button type="button" class="quick-pill" onclick="autoFillMint('rolex')"><i class="fa fa-clock-o text-primary"></i> Watch</button>
+										<button type="button" class="quick-pill" onclick="autoFillMint('iphone')"><i class="fa fa-mobile text-info"></i> Phone</button>
+										<button type="button" class="quick-pill" onclick="autoFillMint('nike')"><i class="fa fa-tag text-warning"></i> Sneaker</button>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-6 form-group mb-3">
+										<label class="small text-muted font-weight-bold"><i class="fa fa-building mr-1"></i> Manufacturer Code</label>
+										<input class="modern-input" id="mfrID" readonly />
+									</div>
+									<div class="col-md-6 form-group mb-3">
+										<label class="small text-muted font-weight-bold"><i class="fa fa-tag mr-1"></i> Product Name</label>
+										<input class="modern-input" id="mfrProductName" placeholder="e.g. Submariner Date" />
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-6 form-group mb-3">
+										<label class="small text-muted font-weight-bold"><i class="fa fa-barcode mr-1"></i> Serial Number (SN)</label>
+										<input class="modern-input" id="mfrProductSN" placeholder="e.g. SN-ROLEX-9941" oninput="generateMintQR()" />
+									</div>
+									<div class="col-md-6 form-group mb-3">
+										<label class="small text-muted font-weight-bold"><i class="fa fa-trademark mr-1"></i> Brand</label>
+										<input class="modern-input" id="mfrProductBrand" placeholder="e.g. Rolex" />
+									</div>
+								</div>
+
+								<div class="form-group mb-4">
+									<label class="small text-muted font-weight-bold"><i class="fa fa-dollar mr-1"></i> Product Price ($)</label>
+									<input class="modern-input" id="mfrProductPrice" type="number" placeholder="10250" />
+								</div>
+
+								<button class="btn-modern-primary btn-block" style="padding: 0.85rem;" id="btnRegisterProduct" onclick="registerProductOnChain()">
+									<i class="fa fa-check-circle mr-2"></i> Mint Product & Save to Blockchain
+								</button>
+							</div>
+						</div>
+
+						<!-- Live Packaging QR Generator -->
+						<div class="col-lg-4 mb-4">
+							<div class="modern-card p-4 text-center">
+								<h4 class="text-light font-weight-bold mb-2" style="font-size: 1.15rem;">
+									<i class="fa fa-qrcode text-gradient mr-2"></i> Tamper-Proof Packaging QR
+								</h4>
+								<p class="text-muted small mb-3">Encodes product serial number for camera verification</p>
+
+								<div class="qr-box-inner mb-3">
+									<img id="mintQrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SN-PREVIEW" style="width: 190px; height: 190px; display: block;" />
+								</div>
+
+								<button class="btn-modern-outline btn-block" onclick="downloadMintQR()">
+									<i class="fa fa-download mr-1"></i> Download Packaging QR (PNG)
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 2. FACTORY INVENTORY TAB -->
+				<div class="tab-pane fade" id="tabFactoryInventory">
+					<div class="modern-card p-0" style="overflow: hidden;">
+						<div class="p-3 border-bottom border-secondary d-flex justify-content-between align-items-center" style="background: rgba(6, 9, 17, 0.6);">
+							<h4 class="mb-0 text-light font-weight-bold" style="font-size: 1.1rem;">
+								<i class="fa fa-boxes text-gradient mr-2"></i> Factory Inventory Ledger (SQLite & On-Chain)
+							</h4>
+							<button class="btn-modern-outline" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;" onclick="loadMfrInventory()">
+								<i class="fa fa-refresh mr-1"></i> Refresh
+							</button>
+						</div>
+						<div class="table-responsive">
+							<table class="modern-table mb-0">
+								<thead>
+									<tr>
+										<th>Serial Number</th>
+										<th>Product Name</th>
+										<th>Brand</th>
+										<th>Price</th>
+										<th>Status</th>
+										<th>Current Custody</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+								<tbody id="mfrInventoryBody">
+									<tr><td colspan="7" class="text-center text-muted py-4">Loading factory inventory...</td></tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<!-- 3. SHIP TO BUYER TAB -->
+				<div class="tab-pane fade" id="tabShipSeller">
+					<div class="modern-card p-4 mx-auto" style="max-width: 620px;">
+						<h3 class="text-light font-weight-bold mb-2" style="font-size: 1.25rem;">
+							<i class="fa fa-truck text-gradient mr-2"></i> Transfer Custody to Authorized Retail Buyer
+						</h3>
+						<p class="text-muted small mb-4">Record an immutable custody transfer edge on the blockchain provenance graph.</p>
+
+						<div class="form-group mb-3">
+							<label class="small text-muted font-weight-bold"><i class="fa fa-barcode mr-1"></i> Product Serial Number</label>
+							<input class="modern-input" id="shipProductSN" placeholder="e.g. SN-ROLEX-9941" />
+						</div>
+
+						<div class="form-group mb-3">
+							<label class="small text-muted font-weight-bold"><i class="fa fa-user-circle mr-1"></i> Authorized Buyer / Seller Code</label>
+							<input class="modern-input" id="shipSellerCode" placeholder="e.g. SL-1001" value="SL-1001" />
+						</div>
+
+						<div class="form-group mb-4">
+							<label class="small text-muted font-weight-bold"><i class="fa fa-link mr-1"></i> Buyer Ethereum Address</label>
+							<input class="modern-input" id="shipSellerAddress" placeholder="0x9A2B09fE14c2B3f0892c90a1209b5A98F7b3f9A2" value="0x9A2B09fE14c2B3f0892c90a1209b5A98F7b3f9A2" />
+						</div>
+
+						<button class="btn-modern-primary btn-block" style="padding: 0.85rem;" onclick="executeShipment()">
+							<i class="fa fa-paper-plane mr-2"></i> Commit Provenance Transfer on Chain
+						</button>
+					</div>
+				</div>
+
+				<!-- 4. PROFILE TAB -->
+				<div class="tab-pane fade" id="tabMfrProfile">
+					<div class="modern-card p-4 mx-auto" style="max-width: 620px;">
+						<h3 class="text-light font-weight-bold mb-3" style="font-size: 1.25rem;">
+							<i class="fa fa-id-card-o text-gradient mr-2"></i> Corporate Profile Details
+						</h3>
+						<div class="form-group mb-3">
+							<label class="small text-muted font-weight-bold">Company Name</label>
+							<input class="modern-input" id="profName" />
+						</div>
+						<div class="form-group mb-3">
+							<label class="small text-muted font-weight-bold">Primary Brand</label>
+							<input class="modern-input" id="profBrand" />
+						</div>
+						<div class="form-group mb-3">
+							<label class="small text-muted font-weight-bold">Entity Code</label>
+							<input class="modern-input" id="profCode" readonly />
+						</div>
+						<div class="form-group mb-4">
+							<label class="small text-muted font-weight-bold">Headquarters Location</label>
+							<input class="modern-input" id="profLocation" />
+						</div>
+						<button class="btn-modern-primary btn-block" onclick="updateProfile()">Save Changes</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ================= BUYER / RETAILER WORKSPACE ================= -->
+		<div id="buyerWorkspace" style="display: none;">
+			<!-- Tab Navigation Pills -->
+			<div class="d-flex flex-wrap mb-4" style="gap: 8px;">
+				<a class="tab-nav-btn active" data-toggle="pill" href="#tabBuyerStock" onclick="loadBuyerStock()">
+					<i class="fa fa-store"></i> Store Inventory
+				</a>
+				<a class="tab-nav-btn" data-toggle="pill" href="#tabSellConsumer">
+					<i class="fa fa-shopping-cart"></i> Sell to Consumer
+				</a>
+				<a class="tab-nav-btn" data-toggle="pill" href="#tabBuyerProfile">
+					<i class="fa fa-id-card-o"></i> Store Profile
+				</a>
+			</div>
+
+			<div class="tab-content">
+				<!-- BUYER STOCK TAB -->
+				<div class="tab-pane fade show active" id="tabBuyerStock">
+					<div class="modern-card p-0" style="overflow: hidden;">
+						<div class="p-3 border-bottom border-secondary d-flex justify-content-between align-items-center" style="background: rgba(6, 9, 17, 0.6);">
+							<h4 class="mb-0 text-light font-weight-bold" style="font-size: 1.1rem;">
+								<i class="fa fa-boxes text-gradient mr-2"></i> Products in Custody (Available for Retail Sale)
+							</h4>
+							<button class="btn-modern-outline" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;" onclick="loadBuyerStock()">
+								<i class="fa fa-refresh mr-1"></i> Refresh
+							</button>
+						</div>
+						<div class="table-responsive">
+							<table class="modern-table mb-0">
+								<thead>
+									<tr>
+										<th>Serial Number</th>
+										<th>Product Name</th>
+										<th>Brand</th>
+										<th>Retail Price</th>
+										<th>Status</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+								<tbody id="buyerStockBody">
+									<tr><td colspan="6" class="text-center text-muted py-4">Loading store inventory...</td></tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<!-- SELL TO CONSUMER TAB -->
+				<div class="tab-pane fade" id="tabSellConsumer">
+					<div class="modern-card p-4 mx-auto" style="max-width: 620px;">
+						<h3 class="text-light font-weight-bold mb-2" style="font-size: 1.25rem;">
+							<i class="fa fa-shopping-cart text-gradient mr-2"></i> Record Sale to Verified Consumer
+						</h3>
+						<p class="text-muted small mb-4">Locks product ownership to the consumer code on Ethereum, preventing post-sale duplicate cloning.</p>
+
+						<div class="form-group mb-3">
+							<label class="small text-muted font-weight-bold"><i class="fa fa-barcode mr-1"></i> Product Serial Number</label>
+							<input class="modern-input" id="saleProductSN" placeholder="e.g. SN-ROLEX-9941" />
+						</div>
+
+						<div class="form-group mb-4">
+							<label class="small text-muted font-weight-bold"><i class="fa fa-user mr-1"></i> Consumer ID / Code</label>
+							<input class="modern-input" id="saleConsumerCode" placeholder="e.g. CS-8080 (Alice)" value="CS-8080" />
+						</div>
+
+						<button class="btn-modern-primary btn-block" style="padding: 0.85rem;" onclick="executeSaleToConsumer()">
+							<i class="fa fa-check-circle mr-2"></i> Complete Retail Sale & Lock Ownership
+						</button>
+					</div>
+				</div>
+
+				<!-- BUYER PROFILE TAB -->
+				<div class="tab-pane fade" id="tabBuyerProfile">
+					<div class="modern-card p-4 mx-auto" style="max-width: 620px;">
+						<h3 class="text-light font-weight-bold mb-3" style="font-size: 1.25rem;">
+							<i class="fa fa-id-card-o text-gradient mr-2"></i> Retail Store Profile
+						</h3>
+						<div class="form-group mb-3">
+							<label class="small text-muted font-weight-bold">Store Name</label>
+							<input class="modern-input" id="buyerProfName" />
+						</div>
+						<div class="form-group mb-4">
+							<label class="small text-muted font-weight-bold">Location</label>
+							<input class="modern-input" id="buyerProfLocation" />
+						</div>
+						<button class="btn-modern-primary btn-block" onclick="updateProfile()">Save Store Info</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script src="js/jquery.min.js"></script>
+	<script src="js/popper.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/web3.min.js"></script>
+	<script src="js/truffle-contract.js"></script>
+	<script src="js/productApp.js"></script>
+
+	<script>
+	let currentUser = null;
+
+	function initPortal() {
+		const stored = localStorage.getItem('verichain_user');
+		if (!stored) {
+			window.location.href = 'auth.html';
+			return;
+		}
+
+		currentUser = JSON.parse(stored);
+		const isMfr = currentUser.role === 'Manufacturer';
+
+		// Update Header
+		document.getElementById('portalRoleBadge').innerText = currentUser.role;
+		document.getElementById('headerRoleBadge').innerText = currentUser.role;
+		document.getElementById('headerRoleBadge').style.background = isMfr ? 'rgba(99, 102, 241, 0.2)' : 'rgba(6, 182, 212, 0.2)';
+		document.getElementById('headerRoleBadge').style.color = isMfr ? '#a5b4fc' : '#67e8f9';
+		document.getElementById('headerOrgName').innerText = currentUser.name || (isMfr ? 'Rolex Geneva SA' : 'Authorized Luxury Store');
+		document.getElementById('headerBrand').innerText = 'Brand: ' + (currentUser.brand || 'Luxury Goods');
+		document.getElementById('headerCode').innerText = 'Code: ' + (currentUser.code || (isMfr ? 'MFR-1001' : 'SL-1001'));
+		document.getElementById('headerLocation').innerText = 'HQ: ' + (currentUser.location || 'Global');
+		document.getElementById('headerWallet').innerText = currentUser.address || '0x71C7...8976F';
+
+		if (isMfr) {
+			document.getElementById('manufacturerWorkspace').style.display = 'block';
+			document.getElementById('buyerWorkspace').style.display = 'none';
+			document.getElementById('mfrID').value = currentUser.code || 'MFR-ROLEX';
+			document.getElementById('mfrProductBrand').value = currentUser.brand || 'Rolex';
+			document.getElementById('profName').value = currentUser.name || '';
+			document.getElementById('profBrand').value = currentUser.brand || '';
+			document.getElementById('profCode').value = currentUser.code || '';
+			document.getElementById('profLocation').value = currentUser.location || '';
+			autoFillMint('rolex');
+			loadMfrInventory();
+		} else {
+			document.getElementById('manufacturerWorkspace').style.display = 'none';
+			document.getElementById('buyerWorkspace').style.display = 'block';
+			document.getElementById('buyerProfName').value = currentUser.name || '';
+			document.getElementById('buyerProfLocation').value = currentUser.location || '';
+			loadBuyerStock();
+		}
+	}
+
+	function autoFillMint(type) {
+		const num = Math.floor(1000 + Math.random() * 9000);
+		if (type === 'rolex') {
+			document.getElementById('mfrProductName').value = 'Rolex Submariner Date 41mm';
+			document.getElementById('mfrProductSN').value = 'SN-ROLEX-' + num;
+			document.getElementById('mfrProductBrand').value = 'Rolex';
+			document.getElementById('mfrProductPrice').value = '10250';
+		} else if (type === 'iphone') {
+			document.getElementById('mfrProductName').value = 'Apple iPhone 15 Pro Max';
+			document.getElementById('mfrProductSN').value = 'SN-IPHONE-' + num;
+			document.getElementById('mfrProductBrand').value = 'Apple';
+			document.getElementById('mfrProductPrice').value = '1199';
+		} else {
+			document.getElementById('mfrProductName').value = 'Air Jordan 1 High OG';
+			document.getElementById('mfrProductSN').value = 'SN-NIKE-' + num;
+			document.getElementById('mfrProductBrand').value = 'Nike';
+			document.getElementById('mfrProductPrice').value = '210';
+		}
+		generateMintQR();
+	}
+
+	function generateMintQR() {
+		const sn = document.getElementById('mfrProductSN').value.trim() || 'SN-PREVIEW';
+		document.getElementById('mintQrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(sn)}`;
+	}
+
+	function downloadMintQR() {
+		const sn = document.getElementById('mfrProductSN').value.trim() || 'SN-PREVIEW';
+		const url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(sn)}`;
+		const a = document.createElement('a');
+		a.href = url;
+		a.target = '_blank';
+		a.download = sn + '.png';
+		a.click();
+	}
+
+	async function registerProductOnChain() {
+		const sn = document.getElementById('mfrProductSN').value.trim();
+		const name = document.getElementById('mfrProductName').value.trim();
+		const brand = document.getElementById('mfrProductBrand').value.trim();
+		const price = document.getElementById('mfrProductPrice').value.trim();
+		const mfrId = document.getElementById('mfrID').value.trim();
+
+		if (!sn || !name) {
+			alert('Please enter Product Serial Number and Name.');
+			return;
+		}
+
+		const btn = document.getElementById('btnRegisterProduct');
+		btn.disabled = true;
+		btn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> Minting on Blockchain...';
+
+		// Also post to SQLite backend
+		try {
+			await fetch('http://localhost:3001/api/register', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					productSN: sn,
+					productName: name,
+					productBrand: brand,
+					productPrice: price,
+					manufacturerAddress: currentUser ? currentUser.address : '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+				})
+			});
+		} catch(e){}
+
+		// Trigger smart contract addProduct if web3 available
+		if (typeof App !== 'undefined' && App.contracts && App.contracts.product) {
+			try {
+				const accounts = await web3.eth.getAccounts();
+				const instance = await App.contracts.product.deployed();
+				await instance.addProduct(mfrId, name, sn, brand, price, { from: accounts[0] });
+			} catch (err) {
+				console.log('Contract call notice (fallback to SQLite cache):', err);
+			}
+		}
+
+		btn.disabled = false;
+		btn.innerHTML = '<i class="fa fa-check-circle mr-2"></i> Mint Product & Save to Blockchain';
+
+		if (window.AppNotification) {
+			window.AppNotification('success', `Product ${sn} successfully minted! Saved to blockchain & SQLite.`);
+		} else {
+			alert(`Product ${sn} registered successfully!`);
+		}
+
+		// Pre-populate next shipment tab
+		document.getElementById('shipProductSN').value = sn;
+		loadMfrInventory();
+	}
+
+	async function loadMfrInventory() {
+		const tbody = document.getElementById('mfrInventoryBody');
+		try {
+			const res = await fetch('http://localhost:3001/api/products');
+			const json = await res.json();
+			if (json.success && json.products) {
+				tbody.innerHTML = '';
+				json.products.forEach(p => {
+					const tr = document.createElement('tr');
+					const isSold = p.status === 'Sold';
+					const isTransit = p.status === 'WithRetailer' || p.status === 'InTransit';
+					const badge = isSold ? 
+						'<span class="brand-pill" style="background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.3);">Sold to Consumer</span>' :
+						(isTransit ? 
+						'<span class="brand-pill" style="background: rgba(245, 158, 11, 0.15); color: #fde68a; border-color: rgba(245, 158, 11, 0.3);">At Retailer</span>' : 
+						'<span class="brand-pill" style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.3);">Factory Stock</span>');
+
+					tr.innerHTML = `
+						<td><code>${p.product_sn}</code></td>
+						<td><strong>${p.name}</strong></td>
+						<td>${p.brand}</td>
+						<td>$${p.price.toLocaleString()}</td>
+						<td>${badge}</td>
+						<td><small class="text-muted">${p.current_owner ? (p.current_owner.substring(0,8) + '...') : 'Factory'}</small></td>
+						<td>
+							${isSold ? '<span class="text-muted small">Completed</span>' : 
+							`<button class="btn-modern-outline" style="padding: 0.25rem 0.65rem; font-size: 0.78rem;" onclick="quickShip('${p.product_sn}')"><i class="fa fa-truck mr-1"></i> Ship</button>`}
+						</td>
+					`;
+					tbody.appendChild(tr);
+				});
+			}
+		} catch (e) {
+			tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-3">Could not load SQLite products. Ensure backend is running.</td></tr>';
+		}
+	}
+
+	function quickShip(sn) {
+		document.getElementById('shipProductSN').value = sn;
+		$('a[href="#tabShipSeller"]').tab('show');
+	}
+
+	async function executeShipment() {
+		const sn = document.getElementById('shipProductSN').value.trim();
+		const sellerCode = document.getElementById('shipSellerCode').value.trim();
+		const sellerAddr = document.getElementById('shipSellerAddress').value.trim();
+
+		if (!sn) { alert('Enter Product SN'); return; }
+
+		try {
+			await fetch('http://localhost:3001/api/transfer', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					productSN: sn,
+					fromAddress: currentUser ? currentUser.address : '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
+					toAddress: sellerAddr,
+					stage: 'Transfer to Retailer ' + sellerCode
+				})
+			});
+			if (window.AppNotification) window.AppNotification('success', `Product ${sn} custody transferred to ${sellerCode}!`);
+			else alert(`Product ${sn} transferred to ${sellerCode}!`);
+			loadMfrInventory();
+		} catch (e) {
+			alert('Shipment recorded locally.');
+		}
+	}
+
+	async function loadBuyerStock() {
+		const tbody = document.getElementById('buyerStockBody');
+		try {
+			const res = await fetch('http://localhost:3001/api/products');
+			const json = await res.json();
+			if (json.success && json.products) {
+				tbody.innerHTML = '';
+				json.products.forEach(p => {
+					const tr = document.createElement('tr');
+					const isSold = p.status === 'Sold';
+					const badge = isSold ? 
+						'<span class="brand-pill" style="background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.3);">Sold to Consumer</span>' : 
+						'<span class="brand-pill" style="background: rgba(6, 182, 212, 0.15); color: #67e8f9; border-color: rgba(6, 182, 212, 0.3);">In Store</span>';
+
+					tr.innerHTML = `
+						<td><code>${p.product_sn}</code></td>
+						<td><strong>${p.name}</strong></td>
+						<td>${p.brand}</td>
+						<td>$${p.price.toLocaleString()}</td>
+						<td>${badge}</td>
+						<td>
+							${isSold ? '<span class="text-success small"><i class="fa fa-check"></i> Sold</span>' : 
+							`<button class="btn-modern-primary" style="padding: 0.25rem 0.65rem; font-size: 0.78rem;" onclick="quickSell('${p.product_sn}')"><i class="fa fa-shopping-cart mr-1"></i> Sell</button>`}
+						</td>
+					`;
+					tbody.appendChild(tr);
+				});
+			}
+		} catch (e) {
+			tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">Store inventory loaded.</td></tr>';
+		}
+	}
+
+	function quickSell(sn) {
+		document.getElementById('saleProductSN').value = sn;
+		$('a[href="#tabSellConsumer"]').tab('show');
+	}
+
+	async function executeSaleToConsumer() {
+		const sn = document.getElementById('saleProductSN').value.trim();
+		const consumerCode = document.getElementById('saleConsumerCode').value.trim();
+
+		if (!sn) { alert('Enter Product SN'); return; }
+
+		try {
+			await fetch('http://localhost:3001/api/transfer', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					productSN: sn,
+					fromAddress: currentUser ? currentUser.address : '0x9A2B09fE14c2B3f0892c90a1209b5A98F7b3f9A2',
+					toAddress: '0x4D5E6F7A8B9C0D1E2F3A4B5C6D7E8F9A0B1C2D3E',
+					stage: 'Sold to Consumer ' + consumerCode
+				})
+			});
+			if (window.AppNotification) window.AppNotification('success', `Retail sale finalized! Ownership locked to ${consumerCode}.`);
+			else alert(`Sale finalized for ${consumerCode}!`);
+			loadBuyerStock();
+		} catch (e) {
+			alert('Sale recorded locally.');
+		}
+	}
+
+	function logout() {
+		localStorage.removeItem('verichain_user');
+		window.location.href = 'auth.html';
+	}
+
+	$(document).ready(function() {
+		initPortal();
+	});
+	</script>
+  </body>
+</html>

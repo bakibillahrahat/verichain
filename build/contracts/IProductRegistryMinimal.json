@@ -1,0 +1,2833 @@
+{
+  "contractName": "IProductRegistryMinimal",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "productId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getProduct",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.12+commit.f00d7308\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"productId\",\"type\":\"uint256\"}],\"name\":\"getProduct\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ScanEventLogger.sol\":\"IProductRegistryMinimal\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ScanEventLogger.sol\":{\"keccak256\":\"0x5c8543f16666738a478347ceb191c29b21c6587bb88a231916ca0e9e7ebb4326\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c23e4b333fc0a7af27b6b5c8250eb7d4d3c96c613997421f72bbda8825414975\",\"dweb:/ipfs/QmTZfS9YXZfhTcHsMHEB8VUFnptc3qVsnpBXrukta4jemB\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.12;\n\ninterface IProductRegistryMinimal {\n    function getProduct(uint256 productId) external view returns (\n        uint256, string memory, string memory, string memory, uint256, address, uint256, string memory, bytes32, uint8\n    );\n}\n\n/**\n * @title ScanEventLogger\n * @dev Immutable scan event logging.\n */\ncontract ScanEventLogger {\n    struct ScanEvent {\n        uint256 scanId;\n        uint256 productId;\n        address scanner;\n        uint256 timestamp;\n        bytes32 locationHash;\n        uint256 nonce;\n    }\n\n    IProductRegistryMinimal public productRegistry;\n\n    mapping(uint256 => ScanEvent[]) private productScans;\n    mapping(uint256 => mapping(address => uint256)) private scannerNonceTracker;\n    uint256 private scanCounter;\n\n    event ProductScanned(\n        uint256 indexed scanId,\n        uint256 indexed productId,\n        address indexed scanner,\n        uint256 timestamp,\n        bytes32 locationHash\n    );\n\n    constructor(address _productRegistryAddress) {\n        productRegistry = IProductRegistryMinimal(_productRegistryAddress);\n    }\n\n    /**\n     * @notice Log a product scan\n     */\n    function logScan(uint256 productId, bytes32 locationHash, uint256 nonce) external {\n        // Will revert if product doesn't exist\n        productRegistry.getProduct(productId);\n        \n        uint256 lastNonce = scannerNonceTracker[productId][msg.sender];\n        require(nonce > lastNonce, \"Nonce must be strictly greater than previous nonce\");\n        \n        scannerNonceTracker[productId][msg.sender] = nonce;\n\n        scanCounter++;\n        ScanEvent memory newScan = ScanEvent({\n            scanId: scanCounter,\n            productId: productId,\n            scanner: msg.sender,\n            timestamp: block.timestamp,\n            locationHash: locationHash,\n            nonce: nonce\n        });\n\n        productScans[productId].push(newScan);\n\n        emit ProductScanned(scanCounter, productId, msg.sender, block.timestamp, locationHash);\n    }\n\n    function getScanHistory(uint256 productId) external view returns (ScanEvent[] memory) {\n        return productScans[productId];\n    }\n\n    function getScanCount(uint256 productId) external view returns (uint256) {\n        return productScans[productId].length;\n    }\n\n    function getLastScan(uint256 productId) external view returns (ScanEvent memory) {\n        require(productScans[productId].length > 0, \"No scans for product\");\n        return productScans[productId][productScans[productId].length - 1];\n    }\n}\n",
+  "sourcePath": "/Users/mbr/Projects/dev/verichain/contracts/ScanEventLogger.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/ScanEventLogger.sol",
+    "exportedSymbols": {
+      "IProductRegistryMinimal": [
+        1252
+      ],
+      "ScanEventLogger": [
+        1441
+      ]
+    },
+    "id": 1442,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1226,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".12"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:24:4"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IProductRegistryMinimal",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 1252,
+        "linearizedBaseContracts": [
+          1252
+        ],
+        "name": "IProductRegistryMinimal",
+        "nameLocation": "68:23:4",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "b9db15b4",
+            "id": 1251,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getProduct",
+            "nameLocation": "107:10:4",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1229,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1228,
+                  "mutability": "mutable",
+                  "name": "productId",
+                  "nameLocation": "126:9:4",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1251,
+                  "src": "118:17:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1227,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "118:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "117:19:4"
+            },
+            "returnParameters": {
+              "id": 1250,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1231,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1251,
+                  "src": "169:7:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1230,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "169:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1233,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1251,
+                  "src": "178:13:4",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1232,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "178:6:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1235,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1251,
+                  "src": "193:13:4",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1234,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "193:6:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1237,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1251,
+                  "src": "208:13:4",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1236,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "208:6:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1239,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1251,
+                  "src": "223:7:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1238,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "223:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1241,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1251,
+                  "src": "232:7:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1240,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "232:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1243,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1251,
+                  "src": "241:7:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1242,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "241:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1245,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1251,
+                  "src": "250:13:4",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1244,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "250:6:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1247,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1251,
+                  "src": "265:7:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1246,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "265:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1249,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1251,
+                  "src": "274:5:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 1248,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "274:5:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "159:126:4"
+            },
+            "scope": 1252,
+            "src": "98:188:4",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 1442,
+        "src": "58:230:4",
+        "usedErrors": []
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "ScanEventLogger",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 1253,
+          "nodeType": "StructuredDocumentation",
+          "src": "290:71:4",
+          "text": " @title ScanEventLogger\n @dev Immutable scan event logging."
+        },
+        "fullyImplemented": true,
+        "id": 1441,
+        "linearizedBaseContracts": [
+          1441
+        ],
+        "name": "ScanEventLogger",
+        "nameLocation": "371:15:4",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "ScanEventLogger.ScanEvent",
+            "id": 1266,
+            "members": [
+              {
+                "constant": false,
+                "id": 1255,
+                "mutability": "mutable",
+                "name": "scanId",
+                "nameLocation": "428:6:4",
+                "nodeType": "VariableDeclaration",
+                "scope": 1266,
+                "src": "420:14:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 1254,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "420:7:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1257,
+                "mutability": "mutable",
+                "name": "productId",
+                "nameLocation": "452:9:4",
+                "nodeType": "VariableDeclaration",
+                "scope": 1266,
+                "src": "444:17:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 1256,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "444:7:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1259,
+                "mutability": "mutable",
+                "name": "scanner",
+                "nameLocation": "479:7:4",
+                "nodeType": "VariableDeclaration",
+                "scope": 1266,
+                "src": "471:15:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 1258,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "471:7:4",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1261,
+                "mutability": "mutable",
+                "name": "timestamp",
+                "nameLocation": "504:9:4",
+                "nodeType": "VariableDeclaration",
+                "scope": 1266,
+                "src": "496:17:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 1260,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "496:7:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1263,
+                "mutability": "mutable",
+                "name": "locationHash",
+                "nameLocation": "531:12:4",
+                "nodeType": "VariableDeclaration",
+                "scope": 1266,
+                "src": "523:20:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                },
+                "typeName": {
+                  "id": 1262,
+                  "name": "bytes32",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "523:7:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1265,
+                "mutability": "mutable",
+                "name": "nonce",
+                "nameLocation": "561:5:4",
+                "nodeType": "VariableDeclaration",
+                "scope": 1266,
+                "src": "553:13:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 1264,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "553:7:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "ScanEvent",
+            "nameLocation": "400:9:4",
+            "nodeType": "StructDefinition",
+            "scope": 1441,
+            "src": "393:180:4",
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "fff218c3",
+            "id": 1269,
+            "mutability": "mutable",
+            "name": "productRegistry",
+            "nameLocation": "610:15:4",
+            "nodeType": "VariableDeclaration",
+            "scope": 1441,
+            "src": "579:46:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_IProductRegistryMinimal_$1252",
+              "typeString": "contract IProductRegistryMinimal"
+            },
+            "typeName": {
+              "id": 1268,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 1267,
+                "name": "IProductRegistryMinimal",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 1252,
+                "src": "579:23:4"
+              },
+              "referencedDeclaration": 1252,
+              "src": "579:23:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IProductRegistryMinimal_$1252",
+                "typeString": "contract IProductRegistryMinimal"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 1275,
+            "mutability": "mutable",
+            "name": "productScans",
+            "nameLocation": "672:12:4",
+            "nodeType": "VariableDeclaration",
+            "scope": 1441,
+            "src": "632:52:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage_$",
+              "typeString": "mapping(uint256 => struct ScanEventLogger.ScanEvent[])"
+            },
+            "typeName": {
+              "id": 1274,
+              "keyType": {
+                "id": 1270,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "640:7:4",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "632:31:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage_$",
+                "typeString": "mapping(uint256 => struct ScanEventLogger.ScanEvent[])"
+              },
+              "valueType": {
+                "baseType": {
+                  "id": 1272,
+                  "nodeType": "UserDefinedTypeName",
+                  "pathNode": {
+                    "id": 1271,
+                    "name": "ScanEvent",
+                    "nodeType": "IdentifierPath",
+                    "referencedDeclaration": 1266,
+                    "src": "651:9:4"
+                  },
+                  "referencedDeclaration": 1266,
+                  "src": "651:9:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_ScanEvent_$1266_storage_ptr",
+                    "typeString": "struct ScanEventLogger.ScanEvent"
+                  }
+                },
+                "id": 1273,
+                "nodeType": "ArrayTypeName",
+                "src": "651:11:4",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage_ptr",
+                  "typeString": "struct ScanEventLogger.ScanEvent[]"
+                }
+              }
+            },
+            "visibility": "private"
+          },
+          {
+            "constant": false,
+            "id": 1281,
+            "mutability": "mutable",
+            "name": "scannerNonceTracker",
+            "nameLocation": "746:19:4",
+            "nodeType": "VariableDeclaration",
+            "scope": 1441,
+            "src": "690:75:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_mapping$_t_address_$_t_uint256_$_$",
+              "typeString": "mapping(uint256 => mapping(address => uint256))"
+            },
+            "typeName": {
+              "id": 1280,
+              "keyType": {
+                "id": 1276,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "698:7:4",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "690:47:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_mapping$_t_address_$_t_uint256_$_$",
+                "typeString": "mapping(uint256 => mapping(address => uint256))"
+              },
+              "valueType": {
+                "id": 1279,
+                "keyType": {
+                  "id": 1277,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "717:7:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "nodeType": "Mapping",
+                "src": "709:27:4",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
+                  "typeString": "mapping(address => uint256)"
+                },
+                "valueType": {
+                  "id": 1278,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "728:7:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                }
+              }
+            },
+            "visibility": "private"
+          },
+          {
+            "constant": false,
+            "id": 1283,
+            "mutability": "mutable",
+            "name": "scanCounter",
+            "nameLocation": "787:11:4",
+            "nodeType": "VariableDeclaration",
+            "scope": 1441,
+            "src": "771:27:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 1282,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "771:7:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "private"
+          },
+          {
+            "anonymous": false,
+            "id": 1295,
+            "name": "ProductScanned",
+            "nameLocation": "811:14:4",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1294,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1285,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "scanId",
+                  "nameLocation": "851:6:4",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1295,
+                  "src": "835:22:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1284,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "835:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1287,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "productId",
+                  "nameLocation": "883:9:4",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1295,
+                  "src": "867:25:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1286,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "867:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1289,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "scanner",
+                  "nameLocation": "918:7:4",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1295,
+                  "src": "902:23:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1288,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "902:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1291,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "timestamp",
+                  "nameLocation": "943:9:4",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1295,
+                  "src": "935:17:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1290,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "935:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1293,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "locationHash",
+                  "nameLocation": "970:12:4",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1295,
+                  "src": "962:20:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1292,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "962:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "825:163:4"
+            },
+            "src": "805:184:4"
+          },
+          {
+            "body": {
+              "id": 1306,
+              "nodeType": "Block",
+              "src": "1040:83:4",
+              "statements": [
+                {
+                  "expression": {
+                    "id": 1304,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 1300,
+                      "name": "productRegistry",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1269,
+                      "src": "1050:15:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_IProductRegistryMinimal_$1252",
+                        "typeString": "contract IProductRegistryMinimal"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "arguments": [
+                        {
+                          "id": 1302,
+                          "name": "_productRegistryAddress",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 1297,
+                          "src": "1092:23:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        ],
+                        "id": 1301,
+                        "name": "IProductRegistryMinimal",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1252,
+                        "src": "1068:23:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_IProductRegistryMinimal_$1252_$",
+                          "typeString": "type(contract IProductRegistryMinimal)"
+                        }
+                      },
+                      "id": 1303,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "1068:48:4",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_IProductRegistryMinimal_$1252",
+                        "typeString": "contract IProductRegistryMinimal"
+                      }
+                    },
+                    "src": "1050:66:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IProductRegistryMinimal_$1252",
+                      "typeString": "contract IProductRegistryMinimal"
+                    }
+                  },
+                  "id": 1305,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1050:66:4"
+                }
+              ]
+            },
+            "id": 1307,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1298,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1297,
+                  "mutability": "mutable",
+                  "name": "_productRegistryAddress",
+                  "nameLocation": "1015:23:4",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1307,
+                  "src": "1007:31:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1296,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1007:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1006:33:4"
+            },
+            "returnParameters": {
+              "id": 1299,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1040:0:4"
+            },
+            "scope": 1441,
+            "src": "995:128:4",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 1382,
+              "nodeType": "Block",
+              "src": "1261:775:4",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 1320,
+                        "name": "productId",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1310,
+                        "src": "1346:9:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "expression": {
+                        "id": 1317,
+                        "name": "productRegistry",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1269,
+                        "src": "1319:15:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_IProductRegistryMinimal_$1252",
+                          "typeString": "contract IProductRegistryMinimal"
+                        }
+                      },
+                      "id": 1319,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "getProduct",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 1251,
+                      "src": "1319:26:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_view$_t_uint256_$returns$_t_uint256_$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_uint256_$_t_address_$_t_uint256_$_t_string_memory_ptr_$_t_bytes32_$_t_uint8_$",
+                        "typeString": "function (uint256) view external returns (uint256,string memory,string memory,string memory,uint256,address,uint256,string memory,bytes32,uint8)"
+                      }
+                    },
+                    "id": 1321,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1319:37:4",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$_t_uint256_$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_uint256_$_t_address_$_t_uint256_$_t_string_memory_ptr_$_t_bytes32_$_t_uint8_$",
+                      "typeString": "tuple(uint256,string memory,string memory,string memory,uint256,address,uint256,string memory,bytes32,uint8)"
+                    }
+                  },
+                  "id": 1322,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1319:37:4"
+                },
+                {
+                  "assignments": [
+                    1324
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 1324,
+                      "mutability": "mutable",
+                      "name": "lastNonce",
+                      "nameLocation": "1383:9:4",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 1382,
+                      "src": "1375:17:4",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "typeName": {
+                        "id": 1323,
+                        "name": "uint256",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "1375:7:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 1331,
+                  "initialValue": {
+                    "baseExpression": {
+                      "baseExpression": {
+                        "id": 1325,
+                        "name": "scannerNonceTracker",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1281,
+                        "src": "1395:19:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_mapping$_t_uint256_$_t_mapping$_t_address_$_t_uint256_$_$",
+                          "typeString": "mapping(uint256 => mapping(address => uint256))"
+                        }
+                      },
+                      "id": 1327,
+                      "indexExpression": {
+                        "id": 1326,
+                        "name": "productId",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1310,
+                        "src": "1415:9:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "nodeType": "IndexAccess",
+                      "src": "1395:30:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
+                        "typeString": "mapping(address => uint256)"
+                      }
+                    },
+                    "id": 1330,
+                    "indexExpression": {
+                      "expression": {
+                        "id": 1328,
+                        "name": "msg",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4294967281,
+                        "src": "1426:3:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_magic_message",
+                          "typeString": "msg"
+                        }
+                      },
+                      "id": 1329,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "sender",
+                      "nodeType": "MemberAccess",
+                      "src": "1426:10:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "IndexAccess",
+                    "src": "1395:42:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "1375:62:4"
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "commonType": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "id": 1335,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "id": 1333,
+                          "name": "nonce",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 1314,
+                          "src": "1455:5:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": ">",
+                        "rightExpression": {
+                          "id": 1334,
+                          "name": "lastNonce",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 1324,
+                          "src": "1463:9:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "src": "1455:17:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      {
+                        "hexValue": "4e6f6e6365206d757374206265207374726963746c792067726561746572207468616e2070726576696f7573206e6f6e6365",
+                        "id": 1336,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "string",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "1474:52:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_stringliteral_0b359ca3b55d820e510709e527b2a8251745cc6d8b162ee0484e1fe72be5f617",
+                          "typeString": "literal_string \"Nonce must be strictly greater than previous nonce\""
+                        },
+                        "value": "Nonce must be strictly greater than previous nonce"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        {
+                          "typeIdentifier": "t_stringliteral_0b359ca3b55d820e510709e527b2a8251745cc6d8b162ee0484e1fe72be5f617",
+                          "typeString": "literal_string \"Nonce must be strictly greater than previous nonce\""
+                        }
+                      ],
+                      "id": 1332,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        4294967278,
+                        4294967278
+                      ],
+                      "referencedDeclaration": 4294967278,
+                      "src": "1447:7:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (bool,string memory) pure"
+                      }
+                    },
+                    "id": 1337,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1447:80:4",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 1338,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1447:80:4"
+                },
+                {
+                  "expression": {
+                    "id": 1346,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "baseExpression": {
+                        "baseExpression": {
+                          "id": 1339,
+                          "name": "scannerNonceTracker",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 1281,
+                          "src": "1546:19:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_mapping$_t_uint256_$_t_mapping$_t_address_$_t_uint256_$_$",
+                            "typeString": "mapping(uint256 => mapping(address => uint256))"
+                          }
+                        },
+                        "id": 1343,
+                        "indexExpression": {
+                          "id": 1340,
+                          "name": "productId",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 1310,
+                          "src": "1566:9:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "IndexAccess",
+                        "src": "1546:30:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
+                          "typeString": "mapping(address => uint256)"
+                        }
+                      },
+                      "id": 1344,
+                      "indexExpression": {
+                        "expression": {
+                          "id": 1341,
+                          "name": "msg",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 4294967281,
+                          "src": "1577:3:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_message",
+                            "typeString": "msg"
+                          }
+                        },
+                        "id": 1342,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "sender",
+                        "nodeType": "MemberAccess",
+                        "src": "1577:10:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "nodeType": "IndexAccess",
+                      "src": "1546:42:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 1345,
+                      "name": "nonce",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1314,
+                      "src": "1591:5:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "1546:50:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 1347,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1546:50:4"
+                },
+                {
+                  "expression": {
+                    "id": 1349,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "UnaryOperation",
+                    "operator": "++",
+                    "prefix": false,
+                    "src": "1607:13:4",
+                    "subExpression": {
+                      "id": 1348,
+                      "name": "scanCounter",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1283,
+                      "src": "1607:11:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 1350,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1607:13:4"
+                },
+                {
+                  "assignments": [
+                    1353
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 1353,
+                      "mutability": "mutable",
+                      "name": "newScan",
+                      "nameLocation": "1647:7:4",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 1382,
+                      "src": "1630:24:4",
+                      "stateVariable": false,
+                      "storageLocation": "memory",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_ScanEvent_$1266_memory_ptr",
+                        "typeString": "struct ScanEventLogger.ScanEvent"
+                      },
+                      "typeName": {
+                        "id": 1352,
+                        "nodeType": "UserDefinedTypeName",
+                        "pathNode": {
+                          "id": 1351,
+                          "name": "ScanEvent",
+                          "nodeType": "IdentifierPath",
+                          "referencedDeclaration": 1266,
+                          "src": "1630:9:4"
+                        },
+                        "referencedDeclaration": 1266,
+                        "src": "1630:9:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_ScanEvent_$1266_storage_ptr",
+                          "typeString": "struct ScanEventLogger.ScanEvent"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 1364,
+                  "initialValue": {
+                    "arguments": [
+                      {
+                        "id": 1355,
+                        "name": "scanCounter",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1283,
+                        "src": "1689:11:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "id": 1356,
+                        "name": "productId",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1310,
+                        "src": "1725:9:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "expression": {
+                          "id": 1357,
+                          "name": "msg",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 4294967281,
+                          "src": "1757:3:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_message",
+                            "typeString": "msg"
+                          }
+                        },
+                        "id": 1358,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "sender",
+                        "nodeType": "MemberAccess",
+                        "src": "1757:10:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      {
+                        "expression": {
+                          "id": 1359,
+                          "name": "block",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 4294967292,
+                          "src": "1792:5:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_block",
+                            "typeString": "block"
+                          }
+                        },
+                        "id": 1360,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "timestamp",
+                        "nodeType": "MemberAccess",
+                        "src": "1792:15:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "id": 1361,
+                        "name": "locationHash",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1312,
+                        "src": "1835:12:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      },
+                      {
+                        "id": 1362,
+                        "name": "nonce",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1314,
+                        "src": "1868:5:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "id": 1354,
+                      "name": "ScanEvent",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1266,
+                      "src": "1657:9:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_struct$_ScanEvent_$1266_storage_ptr_$",
+                        "typeString": "type(struct ScanEventLogger.ScanEvent storage pointer)"
+                      }
+                    },
+                    "id": 1363,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "structConstructorCall",
+                    "lValueRequested": false,
+                    "names": [
+                      "scanId",
+                      "productId",
+                      "scanner",
+                      "timestamp",
+                      "locationHash",
+                      "nonce"
+                    ],
+                    "nodeType": "FunctionCall",
+                    "src": "1657:227:4",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_ScanEvent_$1266_memory_ptr",
+                      "typeString": "struct ScanEventLogger.ScanEvent memory"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "1630:254:4"
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 1369,
+                        "name": "newScan",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1353,
+                        "src": "1924:7:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_ScanEvent_$1266_memory_ptr",
+                          "typeString": "struct ScanEventLogger.ScanEvent memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_struct$_ScanEvent_$1266_memory_ptr",
+                          "typeString": "struct ScanEventLogger.ScanEvent memory"
+                        }
+                      ],
+                      "expression": {
+                        "baseExpression": {
+                          "id": 1365,
+                          "name": "productScans",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 1275,
+                          "src": "1895:12:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_mapping$_t_uint256_$_t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage_$",
+                            "typeString": "mapping(uint256 => struct ScanEventLogger.ScanEvent storage ref[] storage ref)"
+                          }
+                        },
+                        "id": 1367,
+                        "indexExpression": {
+                          "id": 1366,
+                          "name": "productId",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 1310,
+                          "src": "1908:9:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "IndexAccess",
+                        "src": "1895:23:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage",
+                          "typeString": "struct ScanEventLogger.ScanEvent storage ref[] storage ref"
+                        }
+                      },
+                      "id": 1368,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "push",
+                      "nodeType": "MemberAccess",
+                      "src": "1895:28:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_arraypush_nonpayable$_t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage_ptr_$_t_struct$_ScanEvent_$1266_storage_$returns$__$bound_to$_t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage_ptr_$",
+                        "typeString": "function (struct ScanEventLogger.ScanEvent storage ref[] storage pointer,struct ScanEventLogger.ScanEvent storage ref)"
+                      }
+                    },
+                    "id": 1370,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1895:37:4",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 1371,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1895:37:4"
+                },
+                {
+                  "eventCall": {
+                    "arguments": [
+                      {
+                        "id": 1373,
+                        "name": "scanCounter",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1283,
+                        "src": "1963:11:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "id": 1374,
+                        "name": "productId",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1310,
+                        "src": "1976:9:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "expression": {
+                          "id": 1375,
+                          "name": "msg",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 4294967281,
+                          "src": "1987:3:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_message",
+                            "typeString": "msg"
+                          }
+                        },
+                        "id": 1376,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "sender",
+                        "nodeType": "MemberAccess",
+                        "src": "1987:10:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      {
+                        "expression": {
+                          "id": 1377,
+                          "name": "block",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 4294967292,
+                          "src": "1999:5:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_block",
+                            "typeString": "block"
+                          }
+                        },
+                        "id": 1378,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "timestamp",
+                        "nodeType": "MemberAccess",
+                        "src": "1999:15:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "id": 1379,
+                        "name": "locationHash",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1312,
+                        "src": "2016:12:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      ],
+                      "id": 1372,
+                      "name": "ProductScanned",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1295,
+                      "src": "1948:14:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_uint256_$_t_address_$_t_uint256_$_t_bytes32_$returns$__$",
+                        "typeString": "function (uint256,uint256,address,uint256,bytes32)"
+                      }
+                    },
+                    "id": 1380,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1948:81:4",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 1381,
+                  "nodeType": "EmitStatement",
+                  "src": "1943:86:4"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 1308,
+              "nodeType": "StructuredDocumentation",
+              "src": "1129:45:4",
+              "text": " @notice Log a product scan"
+            },
+            "functionSelector": "67ae3e9c",
+            "id": 1383,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "logScan",
+            "nameLocation": "1188:7:4",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1315,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1310,
+                  "mutability": "mutable",
+                  "name": "productId",
+                  "nameLocation": "1204:9:4",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1383,
+                  "src": "1196:17:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1309,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1196:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1312,
+                  "mutability": "mutable",
+                  "name": "locationHash",
+                  "nameLocation": "1223:12:4",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1383,
+                  "src": "1215:20:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1311,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1215:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1314,
+                  "mutability": "mutable",
+                  "name": "nonce",
+                  "nameLocation": "1245:5:4",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1383,
+                  "src": "1237:13:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1313,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1237:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1195:56:4"
+            },
+            "returnParameters": {
+              "id": 1316,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1261:0:4"
+            },
+            "scope": 1441,
+            "src": "1179:857:4",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": {
+              "id": 1396,
+              "nodeType": "Block",
+              "src": "2128:47:4",
+              "statements": [
+                {
+                  "expression": {
+                    "baseExpression": {
+                      "id": 1392,
+                      "name": "productScans",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1275,
+                      "src": "2145:12:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_mapping$_t_uint256_$_t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage_$",
+                        "typeString": "mapping(uint256 => struct ScanEventLogger.ScanEvent storage ref[] storage ref)"
+                      }
+                    },
+                    "id": 1394,
+                    "indexExpression": {
+                      "id": 1393,
+                      "name": "productId",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1385,
+                      "src": "2158:9:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "IndexAccess",
+                    "src": "2145:23:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage",
+                      "typeString": "struct ScanEventLogger.ScanEvent storage ref[] storage ref"
+                    }
+                  },
+                  "functionReturnParameters": 1391,
+                  "id": 1395,
+                  "nodeType": "Return",
+                  "src": "2138:30:4"
+                }
+              ]
+            },
+            "functionSelector": "7654ca46",
+            "id": 1397,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getScanHistory",
+            "nameLocation": "2051:14:4",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1386,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1385,
+                  "mutability": "mutable",
+                  "name": "productId",
+                  "nameLocation": "2074:9:4",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1397,
+                  "src": "2066:17:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1384,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2066:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2065:19:4"
+            },
+            "returnParameters": {
+              "id": 1391,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1390,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1397,
+                  "src": "2108:18:4",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_ScanEvent_$1266_memory_ptr_$dyn_memory_ptr",
+                    "typeString": "struct ScanEventLogger.ScanEvent[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 1388,
+                      "nodeType": "UserDefinedTypeName",
+                      "pathNode": {
+                        "id": 1387,
+                        "name": "ScanEvent",
+                        "nodeType": "IdentifierPath",
+                        "referencedDeclaration": 1266,
+                        "src": "2108:9:4"
+                      },
+                      "referencedDeclaration": 1266,
+                      "src": "2108:9:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_ScanEvent_$1266_storage_ptr",
+                        "typeString": "struct ScanEventLogger.ScanEvent"
+                      }
+                    },
+                    "id": 1389,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2108:11:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage_ptr",
+                      "typeString": "struct ScanEventLogger.ScanEvent[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2107:20:4"
+            },
+            "scope": 1441,
+            "src": "2042:133:4",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": {
+              "id": 1409,
+              "nodeType": "Block",
+              "src": "2254:54:4",
+              "statements": [
+                {
+                  "expression": {
+                    "expression": {
+                      "baseExpression": {
+                        "id": 1404,
+                        "name": "productScans",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1275,
+                        "src": "2271:12:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_mapping$_t_uint256_$_t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage_$",
+                          "typeString": "mapping(uint256 => struct ScanEventLogger.ScanEvent storage ref[] storage ref)"
+                        }
+                      },
+                      "id": 1406,
+                      "indexExpression": {
+                        "id": 1405,
+                        "name": "productId",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1399,
+                        "src": "2284:9:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "nodeType": "IndexAccess",
+                      "src": "2271:23:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage",
+                        "typeString": "struct ScanEventLogger.ScanEvent storage ref[] storage ref"
+                      }
+                    },
+                    "id": 1407,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "length",
+                    "nodeType": "MemberAccess",
+                    "src": "2271:30:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 1403,
+                  "id": 1408,
+                  "nodeType": "Return",
+                  "src": "2264:37:4"
+                }
+              ]
+            },
+            "functionSelector": "fa4c13b1",
+            "id": 1410,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getScanCount",
+            "nameLocation": "2190:12:4",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1400,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1399,
+                  "mutability": "mutable",
+                  "name": "productId",
+                  "nameLocation": "2211:9:4",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1410,
+                  "src": "2203:17:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1398,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2203:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2202:19:4"
+            },
+            "returnParameters": {
+              "id": 1403,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1402,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1410,
+                  "src": "2245:7:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1401,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2245:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2244:9:4"
+            },
+            "scope": 1441,
+            "src": "2181:127:4",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": {
+              "id": 1439,
+              "nodeType": "Block",
+              "src": "2395:160:4",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "commonType": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "id": 1424,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "expression": {
+                            "baseExpression": {
+                              "id": 1419,
+                              "name": "productScans",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 1275,
+                              "src": "2413:12:4",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_mapping$_t_uint256_$_t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage_$",
+                                "typeString": "mapping(uint256 => struct ScanEventLogger.ScanEvent storage ref[] storage ref)"
+                              }
+                            },
+                            "id": 1421,
+                            "indexExpression": {
+                              "id": 1420,
+                              "name": "productId",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 1412,
+                              "src": "2426:9:4",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            },
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "nodeType": "IndexAccess",
+                            "src": "2413:23:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage",
+                              "typeString": "struct ScanEventLogger.ScanEvent storage ref[] storage ref"
+                            }
+                          },
+                          "id": 1422,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "length",
+                          "nodeType": "MemberAccess",
+                          "src": "2413:30:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": ">",
+                        "rightExpression": {
+                          "hexValue": "30",
+                          "id": 1423,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "number",
+                          "lValueRequested": false,
+                          "nodeType": "Literal",
+                          "src": "2446:1:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_rational_0_by_1",
+                            "typeString": "int_const 0"
+                          },
+                          "value": "0"
+                        },
+                        "src": "2413:34:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      {
+                        "hexValue": "4e6f207363616e7320666f722070726f64756374",
+                        "id": 1425,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "string",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "2449:22:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_stringliteral_e5245da9ede0d3f8286bdc38f8a1774a4eabda0ae14e370e44fae64c1a2f1907",
+                          "typeString": "literal_string \"No scans for product\""
+                        },
+                        "value": "No scans for product"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        {
+                          "typeIdentifier": "t_stringliteral_e5245da9ede0d3f8286bdc38f8a1774a4eabda0ae14e370e44fae64c1a2f1907",
+                          "typeString": "literal_string \"No scans for product\""
+                        }
+                      ],
+                      "id": 1418,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        4294967278,
+                        4294967278
+                      ],
+                      "referencedDeclaration": 4294967278,
+                      "src": "2405:7:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (bool,string memory) pure"
+                      }
+                    },
+                    "id": 1426,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "2405:67:4",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 1427,
+                  "nodeType": "ExpressionStatement",
+                  "src": "2405:67:4"
+                },
+                {
+                  "expression": {
+                    "baseExpression": {
+                      "baseExpression": {
+                        "id": 1428,
+                        "name": "productScans",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1275,
+                        "src": "2489:12:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_mapping$_t_uint256_$_t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage_$",
+                          "typeString": "mapping(uint256 => struct ScanEventLogger.ScanEvent storage ref[] storage ref)"
+                        }
+                      },
+                      "id": 1430,
+                      "indexExpression": {
+                        "id": 1429,
+                        "name": "productId",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1412,
+                        "src": "2502:9:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "nodeType": "IndexAccess",
+                      "src": "2489:23:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage",
+                        "typeString": "struct ScanEventLogger.ScanEvent storage ref[] storage ref"
+                      }
+                    },
+                    "id": 1437,
+                    "indexExpression": {
+                      "commonType": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "id": 1436,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "leftExpression": {
+                        "expression": {
+                          "baseExpression": {
+                            "id": 1431,
+                            "name": "productScans",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1275,
+                            "src": "2513:12:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_mapping$_t_uint256_$_t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage_$",
+                              "typeString": "mapping(uint256 => struct ScanEventLogger.ScanEvent storage ref[] storage ref)"
+                            }
+                          },
+                          "id": 1433,
+                          "indexExpression": {
+                            "id": 1432,
+                            "name": "productId",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1412,
+                            "src": "2526:9:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          "isConstant": false,
+                          "isLValue": true,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "nodeType": "IndexAccess",
+                          "src": "2513:23:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_array$_t_struct$_ScanEvent_$1266_storage_$dyn_storage",
+                            "typeString": "struct ScanEventLogger.ScanEvent storage ref[] storage ref"
+                          }
+                        },
+                        "id": 1434,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "length",
+                        "nodeType": "MemberAccess",
+                        "src": "2513:30:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "nodeType": "BinaryOperation",
+                      "operator": "-",
+                      "rightExpression": {
+                        "hexValue": "31",
+                        "id": 1435,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "number",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "2546:1:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_rational_1_by_1",
+                          "typeString": "int_const 1"
+                        },
+                        "value": "1"
+                      },
+                      "src": "2513:34:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "IndexAccess",
+                    "src": "2489:59:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_ScanEvent_$1266_storage",
+                      "typeString": "struct ScanEventLogger.ScanEvent storage ref"
+                    }
+                  },
+                  "functionReturnParameters": 1417,
+                  "id": 1438,
+                  "nodeType": "Return",
+                  "src": "2482:66:4"
+                }
+              ]
+            },
+            "functionSelector": "4500937a",
+            "id": 1440,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getLastScan",
+            "nameLocation": "2323:11:4",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1413,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1412,
+                  "mutability": "mutable",
+                  "name": "productId",
+                  "nameLocation": "2343:9:4",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1440,
+                  "src": "2335:17:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1411,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2335:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2334:19:4"
+            },
+            "returnParameters": {
+              "id": 1417,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1416,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1440,
+                  "src": "2377:16:4",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_ScanEvent_$1266_memory_ptr",
+                    "typeString": "struct ScanEventLogger.ScanEvent"
+                  },
+                  "typeName": {
+                    "id": 1415,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 1414,
+                      "name": "ScanEvent",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1266,
+                      "src": "2377:9:4"
+                    },
+                    "referencedDeclaration": 1266,
+                    "src": "2377:9:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_ScanEvent_$1266_storage_ptr",
+                      "typeString": "struct ScanEventLogger.ScanEvent"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2376:18:4"
+            },
+            "scope": 1441,
+            "src": "2314:241:4",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 1442,
+        "src": "362:2195:4",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:2526:4"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.12+commit.f00d7308.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.16",
+  "updatedAt": "2026-09-03T15:02:36.628Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

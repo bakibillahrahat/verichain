@@ -1,0 +1,30 @@
+[
+  {
+    "op": "1. Register Manufacturer (Admin)",
+    "gas": 45210
+  },
+  {
+    "op": "2. Register Product + Fingerprint (MFR)",
+    "gas": 154820
+  },
+  {
+    "op": "3. Transfer to Distributor (MFR)",
+    "gas": 89450
+  },
+  {
+    "op": "4. Transfer to Retailer (DIST)",
+    "gas": 89450
+  },
+  {
+    "op": "5. Sell to Consumer (RET)",
+    "gas": 74200
+  },
+  {
+    "op": "6. Consumer QR Verification + Scan Log",
+    "gas": 56120
+  },
+  {
+    "op": "7. Full Product Lifecycle (Total On-Chain)",
+    "gas": 464040
+  }
+]

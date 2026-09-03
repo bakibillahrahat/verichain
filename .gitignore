@@ -1,2 +1,7 @@
 node_modules
 .config
+.config_home/
+ml/venv/
+ml/models/*.pkl
+server/node_modules/
+.env

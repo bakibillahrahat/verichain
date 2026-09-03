@@ -23,11 +23,12 @@
 			<div class="collapse navbar-collapse" id="ftco-nav">
 				<ul class="navbar-nav mx-auto">
 					<li class="nav-item"><a href="index.html" class="nav-link"><i class="fa fa-home"></i> Home</a></li>
+					<li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fa fa-dashboard"></i> Dashboard</a></li>
 					<li class="nav-item"><a href="manufacturer.html" class="nav-link"><i class="fa fa-industry"></i> Manufacturer</a></li>
 					<li class="nav-item"><a href="seller.html" class="nav-link"><i class="fa fa-shopping-bag"></i> Seller</a></li>
 					<li class="nav-item active"><a href="consumer.html" class="nav-link"><i class="fa fa-user-check"></i> Consumer</a></li>
 				</ul>
-				<div class="wallet-badge d-none d-lg-flex">
+				<div class="wallet-badge d-none d-lg-flex" style="cursor: pointer;" title="Click to Connect MetaMask">
 					<span class="status-dot"></span>
 					<span id="walletAddressBadge">MetaMask Ready</span>
 				</div>
@@ -39,39 +40,57 @@
 		<!-- Page Header & Subnav -->
 		<div class="page-header">
 			<h1 class="page-title">Consumer <span class="text-gradient-purple">Verification Center</span></h1>
-			<p class="page-desc">Scan product QR codes or check purchase history to verify counterfeit-free authenticity powered by blockchain.</p>
+			<p class="page-desc">Scan packaging QR codes to verify product authenticity, inspect complete blockchain provenance, and detect cloned counterfeit goods.</p>
 			
 			<div class="subnav-pills">
-				<a href="verifyProducts.html" class="subnav-pill"><i class="fa fa-shield"></i> Product Verification</a>
+				<a href="verifyCACD.html" class="subnav-pill" style="border: 1px solid #7c4dff;"><i class="fa fa-tachometer text-gradient-purple"></i> CACD Anti-Clone AI Verification</a>
+				<a href="verifyProducts.html" class="subnav-pill"><i class="fa fa-shield"></i> Basic Verification</a>
 				<a href="consumerPurchaseHistory.html" class="subnav-pill"><i class="fa fa-history"></i> Purchase History</a>
 			</div>
 		</div>
 
 		<!-- Action Cards Grid -->
 		<div class="row">
-			<!-- Card 1: Product Verification -->
-			<div class="col-md-6 mb-4">
+			<!-- Card 1: CACD Verification (Featured) -->
+			<div class="col-md-4 mb-4">
+				<div class="glass-card glass-card-hover action-card" style="border: 1px solid rgba(124, 77, 255, 0.4);">
+					<div>
+						<div class="action-icon icon-purple">
+							<i class="fa fa-tachometer"></i>
+						</div>
+						<div class="d-flex justify-content-between align-items-center mb-2">
+							<h3 class="action-title mb-0">CACD Verification</h3>
+							<span class="badge badge-primary px-2 py-1" style="font-size: 0.65rem;">AI + Behavioral</span>
+						</div>
+						<p class="action-desc">Detect cloned and photocopied QR codes through real-time behavioral analysis, travel velocity checks, and Counterfeit Risk Scoring (CRS).</p>
+					</div>
+					<a href="verifyCACD.html" class="btn btn-primary btn-block">Launch CACD Scanner <i class="fa fa-arrow-right ml-2"></i></a>
+				</div>
+			</div>
+
+			<!-- Card 2: Standard Verification -->
+			<div class="col-md-4 mb-4">
 				<div class="glass-card glass-card-hover action-card">
 					<div>
 						<div class="action-icon icon-emerald">
 							<i class="fa fa-shield"></i>
 						</div>
-						<h3 class="action-title">Verify Product Authenticity</h3>
-						<p class="action-desc">Point your device camera at the packaging QR code or enter the product serial number and consumer ID to confirm genuine manufacturer origin.</p>
+						<h3 class="action-title">Standard Verification</h3>
+						<p class="action-desc">Point your device camera at the packaging QR code or enter serial number and consumer ID to confirm genuine manufacturer registration.</p>
 					</div>
-					<a href="verifyProducts.html" class="btn btn-primary btn-block">Verify Authenticity <i class="fa fa-arrow-right ml-2"></i></a>
+					<a href="verifyProducts.html" class="btn btn-outline btn-block">Verify Authenticity <i class="fa fa-arrow-right ml-2"></i></a>
 				</div>
 			</div>
 
-			<!-- Card 2: Consumer Purchase History -->
-			<div class="col-md-6 mb-4">
+			<!-- Card 3: Consumer Purchase History -->
+			<div class="col-md-4 mb-4">
 				<div class="glass-card glass-card-hover action-card">
 					<div>
-						<div class="action-icon icon-purple">
+						<div class="action-icon icon-blue">
 							<i class="fa fa-history"></i>
 						</div>
-						<h3 class="action-title">Inspect Purchase History</h3>
-						<p class="action-desc">View your immutable ledger of authenticated items, including manufacturer IDs, authorized seller IDs, and chronological provenance records.</p>
+						<h3 class="action-title">Purchase History</h3>
+						<p class="action-desc">View your immutable ledger of authenticated items, including manufacturer IDs, authorized seller codes, and chronological provenance records.</p>
 					</div>
 					<a href="consumerPurchaseHistory.html" class="btn btn-outline btn-block">View History <i class="fa fa-arrow-right ml-2"></i></a>
 				</div>
@@ -86,7 +105,3 @@
 	<script src="js/truffle-contract.js"></script>
   </body>
 </html>
-
-
-
-

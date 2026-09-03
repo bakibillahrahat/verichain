@@ -23,11 +23,12 @@
 			<div class="collapse navbar-collapse" id="ftco-nav">
 				<ul class="navbar-nav mx-auto">
 					<li class="nav-item"><a href="index.html" class="nav-link"><i class="fa fa-home"></i> Home</a></li>
+					<li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fa fa-dashboard"></i> Dashboard</a></li>
 					<li class="nav-item"><a href="manufacturer.html" class="nav-link"><i class="fa fa-industry"></i> Manufacturer</a></li>
 					<li class="nav-item"><a href="seller.html" class="nav-link"><i class="fa fa-shopping-bag"></i> Seller</a></li>
 					<li class="nav-item active"><a href="consumer.html" class="nav-link"><i class="fa fa-user-check"></i> Consumer</a></li>
 				</ul>
-				<div class="wallet-badge d-none d-lg-flex">
+				<div class="wallet-badge d-none d-lg-flex" style="cursor: pointer;" title="Click to Connect MetaMask">
 					<span class="status-dot"></span>
 					<span id="walletAddressBadge">MetaMask Ready</span>
 				</div>
@@ -42,7 +43,8 @@
 			<p class="page-desc">Verify that your purchased item is 100% genuine and cryptographically registered by an authorized manufacturer.</p>
 			
 			<div class="subnav-pills">
-				<a href="verifyProducts.html" class="subnav-pill active"><i class="fa fa-shield"></i> Product Verification</a>
+				<a href="verifyCACD.html" class="subnav-pill" style="border: 1px solid #7c4dff;"><i class="fa fa-tachometer text-gradient-purple"></i> CACD Anti-Clone AI Verification</a>
+				<a href="verifyProducts.html" class="subnav-pill active"><i class="fa fa-shield"></i> Basic Verification</a>
 				<a href="consumerPurchaseHistory.html" class="subnav-pill"><i class="fa fa-history"></i> Purchase History</a>
 			</div>
 		</div>
@@ -61,8 +63,14 @@
 
 			<!-- Verification Form Column -->
 			<div class="col-lg-7 mb-4">
-				<div class="glass-card">
-					<h3 class="mb-4" style="font-size: 1.3rem;"><i class="fa fa-shield text-gradient-purple mr-2"></i> Verification Parameters</h3>
+					<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+						<h3 class="mb-2 mb-md-0" style="font-size: 1.25rem;"><i class="fa fa-shield text-gradient-purple mr-2"></i> Verification Parameters</h3>
+						<div>
+							<span class="text-muted small mr-2">Quick Test:</span>
+							<button type="button" class="btn btn-xs btn-outline-success mr-1" onclick="quickFillVerify('genuine')"><i class="fa fa-check mr-1"></i> Genuine Item</button>
+							<button type="button" class="btn btn-xs btn-outline-danger" onclick="quickFillVerify('fake')"><i class="fa fa-ban mr-1"></i> Fake / Unregistered</button>
+						</div>
+					</div>
 
 					<div class="form-group">
 						<label for="productSN"><i class="fa fa-barcode mr-1"></i> Product Serial Number (SN)</label>
@@ -143,6 +151,20 @@
 			"qr-reader", { fps: 10, qrbox: 240 });
 		html5QrcodeScanner.render(onScanSuccess);
 	});
+
+	function quickFillVerify(type) {
+		if (type === 'genuine') {
+			document.getElementById('productSN').value = 'SN-ROLEX-SUB-9941';
+			document.getElementById('consumerCode').value = '';
+			if (window.AppNotification) window.AppNotification('info', 'Loaded registered genuine Rolex SN. Querying blockchain...');
+		} else {
+			document.getElementById('productSN').value = 'SN-FAKE-COUNTERFEIT-' + Math.floor(1000 + Math.random()*9000);
+			document.getElementById('consumerCode').value = 'UNKNOWN-BUYER';
+			if (window.AppNotification) window.AppNotification('warning', 'Loaded unregistered fake serial number. Querying blockchain...');
+		}
+		// Trigger query button
+		document.getElementById('register').click();
+	}
 	</script>
   </body>
 </html>

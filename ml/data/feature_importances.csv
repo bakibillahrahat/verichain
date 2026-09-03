@@ -1,0 +1,15 @@
+Feature,Importance
+graph_orphan_score,0.999999999999978
+path_length,1.5900923844518552e-14
+unique_locations,1.9330749094402456e-15
+unique_scanners,1.4128706031502311e-15
+max_spread,1.1403487879738028e-15
+interval_std,7.981602089176238e-16
+scan_count,4.2544973838083143e-16
+scan_frequency,2.9741196468698105e-16
+min_interval,8.402737311773539e-17
+impossible_travel,0.0
+path_deviation,0.0
+manufacturer_valid,0.0
+post_sale_anomaly,0.0
+graph_cycle_detected,0.0

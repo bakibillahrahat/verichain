@@ -9,11 +9,6 @@ App = {
     initWeb3: async function() {
         if (window.ethereum) {
             App.web3Provider = window.ethereum;
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-            } catch (error) {
-                console.error("User denied account access", error);
-            }
         } else if (window.web3) {
             App.web3Provider = window.web3.currentProvider;
         } else {
@@ -25,62 +20,130 @@ App = {
     },
 
     initContract: function() {
-
-        $.getJSON('product.json',function(data){
-
-            var productArtifact=data;
-            App.contracts.product=TruffleContract(productArtifact);
+        $.getJSON('product.json', function(data) {
+            var productArtifact = data;
+            App.contracts.product = TruffleContract(productArtifact);
             App.contracts.product.setProvider(App.web3Provider);
+        }).fail(function() {
+            if (window.AppNotification) {
+                window.AppNotification('error', 'Failed to load product.json contract artifact.');
+            }
         });
 
         return App.bindEvents();
     },
 
     bindEvents: function() {
-
-        $(document).on('click','.btn-register',App.getData);
+        $(document).on('click', '.btn-register', App.getData);
     },
 
-    getData:function(event) {
+    getData: async function(event) {
         event.preventDefault();
-        var productSN = document.getElementById('productSN').value;
-        var consumerCode = document.getElementById('consumerCode').value;
-        var productInstance;
-        //window.ethereum.enable();
-        web3.eth.getAccounts(function(error,accounts){
 
-            if(error) {
-                console.log(error);
+        var productSN = document.getElementById('productSN').value.trim();
+        var consumerCode = document.getElementById('consumerCode').value.trim();
+
+        if (!productSN) {
+            if (window.AppNotification) {
+                window.AppNotification('warning', 'Please scan a QR code or enter a Product Serial Number.');
+            } else {
+                alert('Please scan a QR code or enter a Product Serial Number.');
+            }
+            return;
+        }
+
+        var account = '0x0000000000000000000000000000000000000000';
+        try {
+            if (window.ethereum) {
+                var accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                if (accounts && accounts.length > 0) {
+                    account = accounts[0];
+                }
+            }
+        } catch (e) {}
+
+        var $btn = $('.btn-register');
+        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin mr-2"></i> Querying Ethereum Ledger...');
+
+        App.contracts.product.deployed().then(async function(instance) {
+            var snBytes = web3.fromAscii(productSN);
+            var consumerBytes = consumerCode ? web3.fromAscii(consumerCode) : '0x0000000000000000000000000000000000000000000000000000000000000000';
+
+            // Check if manufactured
+            var mfrBytes = await instance.productsManufactured.call(snBytes);
+            var mfrId = window.cleanAscii(mfrBytes);
+
+            // Check if assigned to seller
+            var sellerBytes = await instance.productsForSale.call(snBytes);
+            var sellerId = window.cleanAscii(sellerBytes);
+
+            // Check if sold to consumer
+            var soldBytes = await instance.productsSold.call(snBytes);
+            var soldConsumerId = window.cleanAscii(soldBytes);
+
+            // Standard boolean verification check
+            var isSoldToThisConsumer = false;
+            if (consumerCode) {
+                isSoldToThisConsumer = await instance.verifyProduct.call(snBytes, consumerBytes);
             }
 
-            var account=accounts[0];
-            // console.log(account);
-            App.contracts.product.deployed().then(function(instance){
+            $btn.prop('disabled', false).html('<i class="fa fa-search mr-2"></i> Query Blockchain for Authenticity');
 
-                productInstance=instance;
-                return productInstance.verifyProduct(web3.fromAscii(productSN), web3.fromAscii(consumerCode),{from:account});
+            var html = "<tr><td class='text-center py-4'>";
 
-            }).then(function(result){
-                
-                // console.log(result);
-
-                var t= "";
-
-                var tr="<tr><td class='text-center py-4'>";
-                if(result){
-                    tr+="<div class='badge-genuine d-inline-flex align-items-center'><i class='fa fa-check-circle mr-2'></i> GENUINE AUTHENTIC PRODUCT</div><p class='text-muted mt-2 mb-0'><small>Cryptographically verified on the Ethereum blockchain.</small></p>";
-                }else{
-                    tr+="<div class='badge-fake d-inline-flex align-items-center'><i class='fa fa-times-circle mr-2'></i> COUNTERFEIT / UNVERIFIED PRODUCT</div><p class='text-muted mt-2 mb-0'><small>Product serial number or consumer ID mismatch on the blockchain.</small></p>";
+            if (mfrId && mfrId !== "" && mfrId !== "0") {
+                // Product exists on blockchain
+                if (isSoldToThisConsumer) {
+                    html += "<div class='badge-genuine d-inline-flex align-items-center mb-3'><i class='fa fa-check-circle mr-2'></i> 100% GENUINE AUTHENTIC PRODUCT</div>";
+                    html += "<p class='text-success font-weight-bold'>Successfully verified on the Ethereum blockchain.</p>";
+                } else if (consumerCode && soldConsumerId && soldConsumerId !== consumerCode) {
+                    // Consumer mismatch! Potential counterfeit / stolen serial number
+                    html += "<div class='badge-fake d-inline-flex align-items-center mb-3'><i class='fa fa-times-circle mr-2'></i> OWNERSHIP MISMATCH / SUSPICIOUS</div>";
+                    html += "<p class='text-danger font-weight-bold'>This serial number is registered on blockchain to a different consumer ID (" + soldConsumerId + ").</p>";
+                } else {
+                    // Product is genuine but pre-sale or verified by general SN lookup
+                    html += "<div class='badge-genuine d-inline-flex align-items-center mb-3'><i class='fa fa-check-circle mr-2'></i> GENUINE REGISTERED PRODUCT</div>";
+                    html += "<p class='text-success font-weight-bold'>Legitimate origin confirmed on Ethereum blockchain.</p>";
                 }
-                tr+="</td></tr>";
-                t+=tr;
 
-                document.getElementById('logdata').innerHTML = t;
-                document.getElementById('add').innerHTML=account;
-           }).catch(function(err){
-               console.log(err.message);
-           })
-        })
+                // Provenance metadata card
+                html += "<div class='mt-3 text-left p-3' style='background:rgba(255,255,255,0.05); border-radius:8px; display:inline-block; max-width:480px; width:100%;'>";
+                html += "<div class='row small text-muted'>";
+                html += "<div class='col-6 mb-2'><strong>Serial Number:</strong><br><span class='text-light font-weight-bold'>" + productSN + "</span></div>";
+                html += "<div class='col-6 mb-2'><strong>Manufacturer ID:</strong><br><span class='text-light'>" + mfrId + "</span></div>";
+                html += "<div class='col-6'><strong>Authorized Seller:</strong><br><span class='text-light'>" + (sellerId || 'In Factory') + "</span></div>";
+                html += "<div class='col-6'><strong>Status:</strong><br><span class='text-light'>" + (soldConsumerId ? 'Sold to ' + soldConsumerId : 'Available for Sale') + "</span></div>";
+                html += "</div></div>";
+
+            } else {
+                // Product SN not found anywhere on the blockchain
+                html += "<div class='badge-fake d-inline-flex align-items-center mb-3'><i class='fa fa-times-circle mr-2'></i> COUNTERFEIT / UNVERIFIED PRODUCT</div>";
+                html += "<p class='text-danger font-weight-bold'>Warning: Serial number '" + productSN + "' was NEVER registered by any certified manufacturer on the blockchain.</p>";
+            }
+
+            html += "</td></tr>";
+
+            document.getElementById('logdata').innerHTML = html;
+            document.getElementById('add').innerHTML = (account && account.length > 10) ? (account.substring(0, 6) + '...' + account.substring(account.length - 4)) : 'View Query';
+
+            if (window.AppNotification) {
+                if (mfrId) {
+                    window.AppNotification('success', 'Blockchain query complete: Genuine manufacturer origin found.');
+                } else {
+                    window.AppNotification('error', 'Blockchain query complete: Product serial number not registered on ledger.');
+                }
+            }
+
+        }).catch(function(err) {
+            $btn.prop('disabled', false).html('<i class="fa fa-search mr-2"></i> Query Blockchain for Authenticity');
+            console.error(err);
+            var msg = err.message || err;
+            if (window.AppNotification) {
+                window.AppNotification('error', 'Verification query failed: ' + msg);
+            } else {
+                alert('Verification query failed: ' + msg);
+            }
+        });
     }
 };
 

@@ -27,7 +27,7 @@
 					<li class="nav-item"><a href="seller.html" class="nav-link"><i class="fa fa-shopping-bag"></i> Seller</a></li>
 					<li class="nav-item"><a href="consumer.html" class="nav-link"><i class="fa fa-user-check"></i> Consumer</a></li>
 				</ul>
-				<div class="wallet-badge d-none d-lg-flex">
+				<div class="wallet-badge d-none d-lg-flex" style="cursor: pointer;" title="Click to Connect MetaMask">
 					<span class="status-dot"></span>
 					<span id="walletAddressBadge">MetaMask Ready</span>
 				</div>
@@ -53,7 +53,15 @@
 			<!-- Form Column -->
 			<div class="col-lg-8 mb-4">
 				<div class="glass-card">
-					<h3 class="mb-4" style="font-size: 1.3rem;"><i class="fa fa-cube text-gradient-purple mr-2"></i> Product Information</h3>
+					<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+						<h3 class="mb-2 mb-md-0" style="font-size: 1.25rem;"><i class="fa fa-cube text-gradient-purple mr-2"></i> Product Information</h3>
+						<div>
+							<span class="text-muted small mr-2">1-Click Auto Fill:</span>
+							<button type="button" class="btn btn-xs btn-outline-info mr-1" onclick="quickFillProduct('rolex')"><i class="fa fa-clock-o mr-1"></i> Rolex Watch</button>
+							<button type="button" class="btn btn-xs btn-outline-info mr-1" onclick="quickFillProduct('iphone')"><i class="fa fa-mobile mr-1"></i> iPhone 15</button>
+							<button type="button" class="btn btn-xs btn-outline-info" onclick="quickFillProduct('nike')"><i class="fa fa-tag mr-1"></i> Nike Shoes</button>
+						</div>
+					</div>
 					
 					<div class="form-grid">
 						<div class="form-group">
@@ -68,7 +76,7 @@
 
 						<div class="form-group">
 							<label for="productSN"><i class="fa fa-barcode mr-1"></i> Product Serial Number (SN)</label>
-							<input class="form-control" id="productSN" name="productSN" placeholder="e.g. SN-892348" type="text" />
+							<input class="form-control" id="productSN" name="productSN" placeholder="e.g. SN-892348" type="text" oninput="fetchQR()" />
 						</div>
 
 						<div class="form-group">
@@ -148,6 +156,33 @@
 	function saveImage(){
 		if (src && qrValue) {
 			saveAs(src, qrValue + ".png");
+		}
+	}
+
+	function quickFillProduct(type) {
+		var num = Math.floor(1000 + Math.random() * 9000);
+		if (type === 'rolex') {
+			document.getElementById('manufacturerID').value = 'MFR-ROLEX-CH';
+			document.getElementById('productName').value = 'Rolex Submariner Date 41mm';
+			document.getElementById('productSN').value = 'SN-ROLEX-' + num;
+			document.getElementById('productBrand').value = 'Rolex';
+			document.getElementById('productPrice').value = '10250';
+		} else if (type === 'iphone') {
+			document.getElementById('manufacturerID').value = 'MFR-APPLE-US';
+			document.getElementById('productName').value = 'iPhone 15 Pro Max 256GB';
+			document.getElementById('productSN').value = 'SN-IPHONE-' + num;
+			document.getElementById('productBrand').value = 'Apple';
+			document.getElementById('productPrice').value = '1199';
+		} else if (type === 'nike') {
+			document.getElementById('manufacturerID').value = 'MFR-NIKE-OR';
+			document.getElementById('productName').value = 'Air Jordan 1 High OG Chicago';
+			document.getElementById('productSN').value = 'SN-NIKE-' + num;
+			document.getElementById('productBrand').value = 'Nike';
+			document.getElementById('productPrice').value = '210';
+		}
+		fetchQR();
+		if (window.AppNotification) {
+			window.AppNotification('info', 'Auto-filled sample data for ' + type.toUpperCase() + '. Click Register below!');
 		}
 	}
 	</script>

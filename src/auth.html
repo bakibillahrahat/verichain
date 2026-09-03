@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  	<title>VeriChain — Enterprise Access & Profile Onboarding</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/modern-design.css">
+	<style>
+		.auth-wrapper {
+			min-height: calc(100vh - 80px);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 3rem 1rem;
+		}
+		.auth-box {
+			width: 100%;
+			max-width: 540px;
+			padding: 2.4rem;
+		}
+		.role-card {
+			flex: 1;
+			padding: 1.2rem;
+			border-radius: var(--radius-md);
+			border: 2px solid var(--border-glass);
+			background: rgba(255, 255, 255, 0.02);
+			color: var(--text-muted);
+			cursor: pointer;
+			transition: all 0.2s ease;
+			text-align: center;
+		}
+		.role-card.active {
+			border-color: var(--accent-primary);
+			background: rgba(99, 102, 241, 0.12);
+			color: #fff;
+			box-shadow: 0 0 20px rgba(99, 102, 241, 0.25);
+		}
+		.role-card i {
+			font-size: 1.8rem;
+			display: block;
+			margin-bottom: 0.5rem;
+		}
+		.tab-pill-btn {
+			padding: 0.6rem 1.4rem;
+			border-radius: var(--radius-full);
+			font-weight: 600;
+			font-size: 0.9rem;
+			color: var(--text-muted);
+			cursor: pointer;
+			transition: all 0.2s;
+			border: 1px solid transparent;
+		}
+		.tab-pill-btn.active {
+			background: rgba(99, 102, 241, 0.15);
+			color: #fff;
+			border-color: var(--accent-primary);
+		}
+	</style>
+  </head>
+  <body>
+	<!-- Sticky Modern Navbar -->
+	<nav class="modern-nav">
+		<div class="modern-nav-container">
+			<a class="nav-brand-logo" href="index.html">
+				<i class="fa fa-shield"></i>
+				<span>VeriChain</span>
+				<span class="brand-pill">Enterprise Access</span>
+			</a>
+			<div class="nav-actions">
+				<a href="index.html" class="btn-modern-outline">
+					<i class="fa fa-arrow-left mr-1"></i> Consumer Verifier
+				</a>
+				<div class="modern-wallet-badge d-none d-lg-flex" onclick="connectWallet()">
+					<span class="wallet-pulse"></span>
+					<span id="walletAddressBadge">MetaMask Ready</span>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<div class="auth-wrapper">
+		<div class="modern-card auth-box">
+			<div class="text-center mb-4">
+				<span class="brand-pill mb-2">Role-Based Access</span>
+				<h2 class="font-weight-bold text-light mb-1" style="font-size: 1.8rem; letter-spacing: -0.02em;">
+					Enterprise Workspace
+				</h2>
+				<p class="text-muted small mb-0">Select your supply chain role to sign in or create your corporate profile</p>
+			</div>
+
+			<!-- Role Selection Buttons -->
+			<div class="d-flex mb-4" style="gap: 12px;">
+				<div class="role-card active" id="roleBtnMfr" onclick="selectRole('Manufacturer')">
+					<i class="fa fa-industry text-primary"></i>
+					<strong class="d-block" style="font-size: 1rem;">Manufacturer</strong>
+					<small class="text-muted">Mint & register products</small>
+				</div>
+				<div class="role-card" id="roleBtnBuyer" onclick="selectRole('Buyer')">
+					<i class="fa fa-shopping-bag text-info"></i>
+					<strong class="d-block" style="font-size: 1rem;">Buyer / Seller</strong>
+					<small class="text-muted">Retail distribution & sales</small>
+				</div>
+			</div>
+
+			<!-- Tabs: Sign In vs Create Profile -->
+			<div class="d-flex justify-content-center mb-4" style="gap: 8px;">
+				<div class="tab-pill-btn active" id="tabLogin" onclick="switchAuthTab('login')">
+					<i class="fa fa-sign-in mr-1"></i> Sign In
+				</div>
+				<div class="tab-pill-btn" id="tabRegister" onclick="switchAuthTab('register')">
+					<i class="fa fa-id-card-o mr-1"></i> Create Profile
+				</div>
+			</div>
+
+			<!-- 1. SIGN IN FORM -->
+			<div id="formLogin">
+				<div id="loginErrorAlert" class="alert alert-danger py-2 px-3 mb-3" style="display: none; font-size: 0.85rem; border-radius: 8px;"></div>
+
+				<div class="form-group mb-3">
+					<label class="small text-muted font-weight-bold"><i class="fa fa-envelope mr-1"></i> Work Email or Wallet Address</label>
+					<input class="modern-input" id="loginEmailOrAddress" placeholder="e.g. manufacturer@rolex.com or 0x..." type="text" />
+				</div>
+
+				<div class="form-group mb-3">
+					<div class="d-flex justify-content-between align-items-center mb-1">
+						<label class="small text-muted font-weight-bold mb-0"><i class="fa fa-key mr-1"></i> Password</label>
+						<span class="text-muted small" style="cursor: pointer;" onclick="togglePasswordVisibility('loginPassword', this)">
+							<i class="fa fa-eye"></i> Show
+						</span>
+					</div>
+					<input class="modern-input" id="loginPassword" placeholder="Enter your password" type="password" />
+				</div>
+
+				<div class="mt-4">
+					<button class="btn-modern-primary btn-block" style="padding: 0.85rem;" id="btnLoginSubmit" onclick="performLogin()">
+						<i class="fa fa-lock mr-2"></i> Sign In to Workspace
+					</button>
+				</div>
+
+				<!-- 1-Click Instant Demo Access -->
+				<div class="mt-4 pt-3 text-center" style="border-top: 1px solid var(--border-subtle);">
+					<span class="text-muted small d-block mb-2 font-weight-bold">1-Click Demo Sandbox Logins (Pre-seeded):</span>
+					<div class="d-flex flex-wrap justify-content-center" style="gap: 8px;">
+						<button class="btn-modern-outline" style="padding: 0.45rem 0.85rem; font-size: 0.82rem;" onclick="demoLogin('Manufacturer')">
+							<i class="fa fa-industry mr-1 text-primary"></i> Rolex (Manufacturer)
+						</button>
+						<button class="btn-modern-outline" style="padding: 0.45rem 0.85rem; font-size: 0.82rem;" onclick="demoLogin('Buyer')">
+							<i class="fa fa-shopping-bag mr-1 text-info"></i> Store (Retail Buyer)
+						</button>
+						<button class="btn-modern-outline" style="padding: 0.45rem 0.85rem; font-size: 0.82rem; border-color: rgba(244,63,94,0.4); color: #fda4af !important;" onclick="demoLogin('Admin')">
+							<i class="fa fa-shield mr-1 text-danger"></i> Admin (Security Officer)
+						</button>
+					</div>
+					<small class="text-muted d-block mt-2" style="font-size: 0.76rem;">Default Passwords: <code>rolex123</code> / <code>buyer123</code> / <code>admin123</code></small>
+				</div>
+			</div>
+
+			<!-- 2. CREATE PROFILE FORM -->
+			<div id="formRegister" style="display: none;">
+				<div id="registerErrorAlert" class="alert alert-danger py-2 px-3 mb-3" style="display: none; font-size: 0.85rem; border-radius: 8px;"></div>
+
+				<div class="form-group mb-3">
+					<label class="small text-muted font-weight-bold"><i class="fa fa-building mr-1"></i> Company / Organization Name *</label>
+					<input class="modern-input" id="regOrgName" placeholder="e.g. Rolex Geneva SA / Apple Europe" type="text" />
+				</div>
+
+				<div class="form-row">
+					<div class="col-md-6 form-group mb-3">
+						<label class="small text-muted font-weight-bold"><i class="fa fa-tag mr-1"></i> Brand Name *</label>
+						<input class="modern-input" id="regBrand" placeholder="e.g. Rolex / Apple" type="text" />
+					</div>
+					<div class="col-md-6 form-group mb-3">
+						<label class="small text-muted font-weight-bold"><i class="fa fa-barcode mr-1"></i> Entity Code / ID</label>
+						<input class="modern-input" id="regCode" placeholder="e.g. MFR-001 or SL-1001" type="text" />
+					</div>
+				</div>
+
+				<div class="form-group mb-3">
+					<label class="small text-muted font-weight-bold"><i class="fa fa-envelope mr-1"></i> Corporate Email *</label>
+					<input class="modern-input" id="regEmail" placeholder="e.g. contact@company.com" type="email" />
+				</div>
+
+				<div class="form-group mb-3">
+					<label class="small text-muted font-weight-bold"><i class="fa fa-key mr-1"></i> Password * (min 6 characters)</label>
+					<input class="modern-input" id="regPassword" placeholder="Create a strong password" type="password" />
+				</div>
+
+				<div class="form-group mb-3">
+					<label class="small text-muted font-weight-bold"><i class="fa fa-map-marker mr-1"></i> Headquarters Location</label>
+					<input class="modern-input" id="regLocation" placeholder="e.g. Geneva, Switzerland" type="text" />
+				</div>
+
+				<div class="form-group mb-4">
+					<label class="small text-muted font-weight-bold"><i class="fa fa-link mr-1"></i> Ethereum Wallet Address (Optional)</label>
+					<input class="modern-input" id="regWalletAddress" placeholder="0x... or auto-detected from MetaMask" type="text" />
+				</div>
+
+				<button class="btn-modern-primary btn-block" style="padding: 0.85rem;" id="btnRegisterSubmit" onclick="performProfileRegister()">
+					<i class="fa fa-check-circle mr-2"></i> Register Account & Launch Workspace
+				</button>
+			</div>
+
+		</div>
+	</div>
+
+	<script src="js/jquery.min.js"></script>
+	<script src="js/popper.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/web3.min.js"></script>
+	<script src="js/truffle-contract.js"></script>
+
+	<script>
+	let selectedRole = 'Manufacturer';
+	let currentWallet = '';
+
+	function selectRole(role) {
+		selectedRole = role;
+		document.getElementById('roleBtnMfr').className = role === 'Manufacturer' ? 'role-card active' : 'role-card';
+		document.getElementById('roleBtnBuyer').className = role === 'Buyer' ? 'role-card active' : 'role-card';
+	}
+
+	function switchAuthTab(tab) {
+		if (tab === 'login') {
+			document.getElementById('tabLogin').className = 'tab-pill-btn active';
+			document.getElementById('tabRegister').className = 'tab-pill-btn';
+			document.getElementById('formLogin').style.display = 'block';
+			document.getElementById('formRegister').style.display = 'none';
+		} else {
+			document.getElementById('tabLogin').className = 'tab-pill-btn';
+			document.getElementById('tabRegister').className = 'tab-pill-btn active';
+			document.getElementById('formLogin').style.display = 'none';
+			document.getElementById('formRegister').style.display = 'block';
+		}
+	}
+
+	function togglePasswordVisibility(fieldId, el) {
+		const field = document.getElementById(fieldId);
+		if (field.type === 'password') {
+			field.type = 'text';
+			el.innerHTML = '<i class="fa fa-eye-slash"></i> Hide';
+		} else {
+			field.type = 'password';
+			el.innerHTML = '<i class="fa fa-eye"></i> Show';
+		}
+	}
+
+	async function connectWallet() {
+		if (window.ensureAccount) {
+			const addr = await window.ensureAccount();
+			if (addr) {
+				currentWallet = addr;
+				const emailField = document.getElementById('loginEmailOrAddress');
+				if (emailField && !emailField.value) emailField.value = addr;
+				const regAddr = document.getElementById('regWalletAddress');
+				if (regAddr) regAddr.value = addr;
+				document.getElementById('walletAddressBadge').innerText = addr.substring(0, 6) + '...' + addr.substring(addr.length - 4);
+			}
+		}
+	}
+
+	function getRedirectTarget(defaultTarget = 'portal.html') {
+		const params = new URLSearchParams(window.location.search);
+		return params.get('redirect') || defaultTarget;
+	}
+
+	async function performLogin() {
+		const emailOrAddress = document.getElementById('loginEmailOrAddress').value.trim();
+		const password = document.getElementById('loginPassword').value.trim();
+		const errBox = document.getElementById('loginErrorAlert');
+
+		errBox.style.display = 'none';
+
+		if (!emailOrAddress) {
+			errBox.innerText = 'Please enter your email or wallet address.';
+			errBox.style.display = 'block';
+			return;
+		}
+
+		const btn = document.getElementById('btnLoginSubmit');
+		btn.disabled = true;
+		btn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> Authenticating...';
+
+		try {
+			const res = await fetch('http://localhost:3001/api/auth/login', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ emailOrAddress, password, role: selectedRole })
+			});
+			const data = await res.json();
+			if (data.success && data.profile) {
+				localStorage.setItem('verichain_user', JSON.stringify(data.profile));
+				const dest = data.profile.role === 'Security Admin' ? getRedirectTarget('dashboard.html') : getRedirectTarget('portal.html');
+				window.location.href = dest;
+			} else {
+				errBox.innerText = data.error || 'Authentication failed. Please check your credentials.';
+				errBox.style.display = 'block';
+			}
+		} catch (e) {
+			errBox.innerText = 'Server unreachable. Please ensure the backend is running.';
+			errBox.style.display = 'block';
+		} finally {
+			btn.disabled = false;
+			btn.innerHTML = '<i class="fa fa-lock mr-2"></i> Sign In to Workspace';
+		}
+	}
+
+	function demoLogin(role) {
+		selectRole(role);
+		if (role === 'Manufacturer') {
+			document.getElementById('loginEmailOrAddress').value = 'manufacturer@rolex.com';
+			document.getElementById('loginPassword').value = 'rolex123';
+		} else if (role === 'Buyer') {
+			document.getElementById('loginEmailOrAddress').value = 'buyer@retail.com';
+			document.getElementById('loginPassword').value = 'buyer123';
+		} else if (role === 'Admin') {
+			document.getElementById('loginEmailOrAddress').value = 'admin@verichain.com';
+			document.getElementById('loginPassword').value = 'admin123';
+		}
+		performLogin();
+	}
+
+	async function performProfileRegister() {
+		const name = document.getElementById('regOrgName').value.trim();
+		const brand = document.getElementById('regBrand').value.trim();
+		const code = document.getElementById('regCode').value.trim();
+		const email = document.getElementById('regEmail').value.trim();
+		const password = document.getElementById('regPassword').value.trim();
+		const location = document.getElementById('regLocation').value.trim();
+		const addr = document.getElementById('regWalletAddress').value.trim() || currentWallet || '';
+		const errBox = document.getElementById('registerErrorAlert');
+
+		errBox.style.display = 'none';
+
+		if (!name || !brand || !email || !password) {
+			errBox.innerText = 'Please complete all required fields (Name, Brand, Email, Password).';
+			errBox.style.display = 'block';
+			return;
+		}
+
+		if (password.length < 6) {
+			errBox.innerText = 'Password must be at least 6 characters long.';
+			errBox.style.display = 'block';
+			return;
+		}
+
+		const btn = document.getElementById('btnRegisterSubmit');
+		btn.disabled = true;
+		btn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> Creating Account...';
+
+		try {
+			const res = await fetch('http://localhost:3001/api/auth/register', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					name, brand, code, email, password, location, address: addr, role: selectedRole
+				})
+			});
+			const data = await res.json();
+			if (data.success && data.profile) {
+				localStorage.setItem('verichain_user', JSON.stringify(data.profile));
+				const dest = data.profile.role === 'Security Admin' ? getRedirectTarget('dashboard.html') : getRedirectTarget('portal.html');
+				window.location.href = dest;
+			} else {
+				errBox.innerText = data.error || 'Registration failed.';
+				errBox.style.display = 'block';
+			}
+		} catch (e) {
+			errBox.innerText = 'Server unreachable. Please check backend status.';
+			errBox.style.display = 'block';
+		} finally {
+			btn.disabled = false;
+			btn.innerHTML = '<i class="fa fa-check-circle mr-2"></i> Register Account & Launch Workspace';
+		}
+	}
+
+	$(document).ready(function() {
+		connectWallet();
+	});
+	</script>
+  </body>
+</html>
