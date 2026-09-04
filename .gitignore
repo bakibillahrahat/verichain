@@ -5,3 +5,5 @@ ml/venv/
 ml/models/*.pkl
 server/node_modules/
 .env
+__pycache__/
+*.pyc

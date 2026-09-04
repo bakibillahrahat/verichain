@@ -7,68 +7,36 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier, IsolationForest
-from xgboost import XGBClassifier
+try:
+    from xgboost import XGBClassifier
+    # Validate libomp dynamic link works
+    _test_xgb = XGBClassifier()
+    HAS_XGBOOST = True
+except Exception:
+    HAS_XGBOOST = False
+    from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import f1_score, precision_score, recall_score, roc_auc_score, accuracy_score, confusion_matrix
 import warnings
 warnings.filterwarnings('ignore')
 
+def get_boosting_model():
+    """Return XGBClassifier if available, otherwise GradientBoostingClassifier."""
+    if HAS_XGBOOST:
+        return XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42, verbosity=0)
+    return GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=5, random_state=42)
 
-def sigmoid(x):
-    """Sigmoid activation function."""
-    return 1 / (1 + np.exp(-np.clip(x, -500, 500)))
 
 
-def rule_based_score(row, feature_cols):
-    """Compute rule-based CRS score for a given row with available features."""
-    all_features = ['scan_count', 'scan_frequency', 'min_interval', 'interval_std',
-                    'unique_locations', 'max_spread', 'impossible_travel', 'path_length',
-                    'path_deviation', 'manufacturer_valid', 'unique_scanners', 'post_sale_anomaly']
-    
-    weights = [0.15, 0.20, 0.15, 0.05, 0.20, 0.10, 0.30, 0.05, 0.25, 0.30, 0.15, 0.20]
-    
-    total = 0
-    for feat, w in zip(all_features, weights):
-        if feat not in feature_cols:
-            continue
-        val = row[feat] if feat in row.index else 0
-        
-        # Feature transformations
-        if feat == 'scan_count':
-            phi = np.log1p(val) / np.log(100)
-        elif feat == 'scan_frequency':
-            phi = min(1, val / 10)
-        elif feat == 'min_interval':
-            phi = 1 - min(1, val / (365 * 24 * 3600))
-        elif feat == 'interval_std':
-            phi = min(1, val / (30 * 24 * 3600))
-        elif feat == 'unique_locations':
-            phi = np.log1p(val) / np.log(50)
-        elif feat == 'max_spread':
-            phi = min(1, val / 10000)
-        elif feat == 'impossible_travel':
-            phi = val
-        elif feat == 'path_length':
-            phi = min(1, val / 20)
-        elif feat == 'path_deviation':
-            phi = val
-        elif feat == 'manufacturer_valid':
-            phi = 1 - val
-        elif feat == 'unique_scanners':
-            phi = np.log1p(val) / np.log(50)
-        elif feat == 'post_sale_anomaly':
-            phi = val
-        else:
-            phi = 0
-        
-        total += w * phi
-    
-    return sigmoid(total - 2.5)
+try:
+    from ml.evaluate import calibrated_rule_score
+except ImportError:
+    from evaluate import calibrated_rule_score
 
 
 def evaluate_config(X_train, X_test, y_train, y_test, config_name, model_type='xgboost'):
     """Train and evaluate a single ablation configuration."""
     if model_type == 'xgboost':
-        model = XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42, verbosity=0)
+        model = get_boosting_model()
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
         y_prob = model.predict_proba(X_test)[:, 1]
@@ -150,20 +118,21 @@ def main():
     X_all = df[all_features]
     X_train_all, X_test_all, y_train_all, y_test_all = train_test_split(X_all, y, test_size=0.2, stratify=y, random_state=42)
     
-    rule_preds = X_test_all.apply(lambda row: rule_based_score(row, all_features), axis=1)
-    y_pred_rule = (rule_preds > 0.5).astype(int)
+    rule_preds = X_test_all.apply(calibrated_rule_score, axis=1)
+    y_pred_rule = (rule_preds > 0.45).astype(int)
+    rule_scores_clipped = np.clip(rule_preds.values, 0, 1)
     
     f1_rule = f1_score(y_test_all, y_pred_rule, zero_division=0)
     prec_rule = precision_score(y_test_all, y_pred_rule, zero_division=0)
     rec_rule = recall_score(y_test_all, y_pred_rule, zero_division=0)
     acc_rule = accuracy_score(y_test_all, y_pred_rule)
-    auc_rule = roc_auc_score(y_test_all, rule_preds)
+    auc_rule = roc_auc_score(y_test_all, rule_scores_clipped)
     tn, fp, fn, tp = confusion_matrix(y_test_all, y_pred_rule).ravel()
     fpr_rule = fp / (fp + tn) if (fp + tn) > 0 else 0
     fnr_rule = fn / (fn + tp) if (fn + tp) > 0 else 0
     
     results.append({
-        'Config': 'A5', 'Model': 'Rule-based',
+        'Config': 'A5', 'Model': 'Rule-based (All Features)',
         'Accuracy': acc_rule, 'F1': f1_rule, 'Precision': prec_rule,
         'Recall': rec_rule, 'AUC': auc_rule, 'FPR': fpr_rule, 'FNR': fnr_rule
     })
@@ -183,12 +152,12 @@ def main():
     
     # ===== A9: Hybrid Rule + XGBoost =====
     print("\n--- Phase 4: Hybrid Scoring (A9) ---")
-    xgb_model = XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42, verbosity=0)
+    xgb_model = get_boosting_model()
     xgb_model.fit(X_train_all, y_train_all)
     ml_probs = xgb_model.predict_proba(X_test_all)[:, 1]
     
     # Hybrid: α=0.4 for rules, 0.6 for ML
-    hybrid_probs = 0.4 * rule_preds.values + 0.6 * ml_probs
+    hybrid_probs = 0.4 * rule_scores_clipped + 0.6 * ml_probs
     y_pred_hybrid = (hybrid_probs > 0.5).astype(int)
     
     f1_hyb = f1_score(y_test_all, y_pred_hybrid, zero_division=0)
@@ -224,12 +193,13 @@ def main():
     X_train_ext, X_test_ext, y_train_ext, y_test_ext = train_test_split(X_ext, y_ext, test_size=0.2, stratify=y_ext, random_state=42)
     
     # Hybrid with graph features
-    xgb_ext = XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42, verbosity=0)
+    xgb_ext = get_boosting_model()
     xgb_ext.fit(X_train_ext, y_train_ext)
     ml_probs_ext = xgb_ext.predict_proba(X_test_ext)[:, 1]
     
-    rule_preds_ext = X_test_ext[all_features].apply(lambda row: rule_based_score(row, all_features), axis=1)
-    hybrid_probs_ext = 0.35 * rule_preds_ext.values + 0.65 * ml_probs_ext
+    rule_preds_ext = X_test_ext[all_features].apply(calibrated_rule_score, axis=1)
+    rule_ext_clipped = np.clip(rule_preds_ext.values, 0, 1)
+    hybrid_probs_ext = 0.35 * rule_ext_clipped + 0.65 * ml_probs_ext
     y_pred_full = (hybrid_probs_ext > 0.5).astype(int)
     
     f1_full = f1_score(y_test_ext, y_pred_full, zero_division=0)
